@@ -10,21 +10,21 @@ export default function Home() {
         </div>
 
         <h1 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-          Twoj portfel,{" "}
-          <span className="text-[color:var(--gold)]">jednym rzutem oka</span>.
+          Your portfolio,{" "}
+          <span className="text-[color:var(--gold)]">at a glance</span>.
         </h1>
 
         <p className="mt-4 max-w-xl text-base leading-relaxed text-[color:var(--muted)]">
-          Akcje, ETF-y, krypto i gotowka w wielu walutach. Aktualne ceny, czytelne wykresy,
-          wartosc portfela przeliczona na PLN.
+          Stocks, ETFs, crypto and cash across multiple currencies. Live prices,
+          clear charts, total value converted to PLN.
         </p>
 
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { label: "Akcje", color: "var(--teal)" },
-            { label: "ETF", color: "var(--gold)" },
-            { label: "Krypto", color: "var(--teal)" },
-            { label: "Gotowka", color: "var(--gold)" },
+            { label: "Stocks", color: "var(--teal)" },
+            { label: "ETFs", color: "var(--gold)" },
+            { label: "Crypto", color: "var(--teal)" },
+            { label: "Cash", color: "var(--gold)" },
           ].map((chip) => (
             <div
               key={chip.label}
@@ -40,7 +40,7 @@ export default function Home() {
         </div>
 
         <p className="mt-8 text-xs text-[color:var(--muted)]">
-          Etap 0 gotowy. Nastepny krok: model danych i dodawanie pozycji.
+          Stage 0 ready. Next up: data model and adding positions.
         </p>
       </div>
     </main>
