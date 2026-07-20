@@ -2,17 +2,10 @@ import type { Currency } from "@prisma/client";
 
 export type FxRatesToPLN = Record<Currency, number>;
 
-// Static fallback used when NBP is unreachable so the app keeps rendering.
-const FALLBACK_RATES: FxRatesToPLN = {
-  PLN: 1,
-  EUR: 4.28,
-  USD: 3.95,
-};
-
 export async function fetchNbpRates(): Promise<FxRatesToPLN> {
   const res = await fetch(
     "https://api.nbp.pl/api/exchangerates/tables/A/?format=json",
-    { next: { revalidate: 60 * 60 } }
+    { cache: "no-store" }
   );
   if (!res.ok) throw new Error(`NBP request failed: ${res.status}`);
 
@@ -30,16 +23,4 @@ export async function fetchNbpRates(): Promise<FxRatesToPLN> {
   }
 
   return { PLN: 1, EUR: eur, USD: usd };
-}
-
-export async function fetchFxRatesWithFallback(): Promise<{
-  rates: FxRatesToPLN;
-  isFallback: boolean;
-}> {
-  try {
-    const rates = await fetchNbpRates();
-    return { rates, isFallback: false };
-  } catch {
-    return { rates: FALLBACK_RATES, isFallback: true };
-  }
 }

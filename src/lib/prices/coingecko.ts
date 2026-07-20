@@ -26,7 +26,7 @@ export async function fetchCryptoPricesUSD(
 
   const idsParam = idPairs.map(([, id]) => id).join(",");
   const url = `https://api.coingecko.com/api/v3/simple/price?ids=${idsParam}&vs_currencies=usd`;
-  const res = await fetch(url, { next: { revalidate: 300 } });
+  const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`CoinGecko request failed: ${res.status}`);
 
   const data = (await res.json()) as Record<string, { usd?: number }>;

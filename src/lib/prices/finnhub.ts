@@ -36,7 +36,7 @@ export async function fetchStockQuotes(
         const url = `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(
           symbol
         )}&token=${apiKey}`;
-        const res = await fetch(url, { next: { revalidate: 900 } });
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) return null;
         const data = (await res.json()) as FinnhubQuote;
         if (!data.c || data.c === 0) return null;

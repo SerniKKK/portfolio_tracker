@@ -55,3 +55,9 @@ model PortfolioSnapshot {
   totalCostPLN  Float
   createdAt     DateTime @default(now())
 }
+
+model FxRate {
+  currency  Currency @id
+  rateToPLN Float
+  fetchedAt DateTime @default(now())
+}

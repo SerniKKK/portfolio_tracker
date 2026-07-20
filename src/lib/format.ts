@@ -65,3 +65,17 @@ export function formatDate(date: Date | string): string {
   if (Number.isNaN(d.getTime())) return "-";
   return dateFormatter.format(d);
 }
+
+export function formatFetchedAt(fetchedAt: Date | string | null): string {
+  if (!fetchedAt) return "n/a";
+  const d = typeof fetchedAt === "string" ? new Date(fetchedAt) : fetchedAt;
+  if (Number.isNaN(d.getTime())) return "n/a";
+  const diffMs = Date.now() - d.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `${diffH}h ago`;
+  const diffD = Math.floor(diffH / 24);
+  return `${diffD}d ago`;
+}

@@ -1,25 +1,27 @@
 import type { PortfolioTotals } from "@/lib/finance";
-import { convertPLNTo, type FxRatesToPLN } from "@/lib/fx";
+import { convertPLNTo, type FxResult } from "@/lib/fx";
 import {
   formatCurrency,
   formatSignedCurrency,
   formatSignedPercent,
 } from "@/lib/format";
+import { formatFetchedAt } from "@/lib/format";
 
 export function PortfolioSummary({
   totals,
   positionCount,
-  fxRates,
-  fxIsFallback,
+  fx,
 }: {
   totals: PortfolioTotals;
   positionCount: number;
-  fxRates: FxRatesToPLN;
-  fxIsFallback: boolean;
+  fx: FxResult;
 }) {
   const positive = totals.totalPnlPLN >= 0;
-  const eurValue = convertPLNTo(totals.totalValuePLN, "EUR", fxRates);
-  const usdValue = convertPLNTo(totals.totalValuePLN, "USD", fxRates);
+  const eurValue = convertPLNTo(totals.totalValuePLN, "EUR", fx.rates);
+  const usdValue = convertPLNTo(totals.totalValuePLN, "USD", fx.rates);
+  const fxLabel = fx.isFallback
+    ? "FX: fallback"
+    : `FX: ${formatFetchedAt(fx.fetchedAt)}${fx.isStale ? " (stale)" : ""}`;
 
   return (
     <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -29,11 +31,16 @@ export function PortfolioSummary({
         </div>
         <div className="mt-1 text-xs text-[color:var(--muted)]">
           {formatCurrency(eurValue, "EUR")} · {formatCurrency(usdValue, "USD")}
-          {fxIsFallback && (
-            <span className="ml-2 text-[color:var(--negative)]">
-              (FX fallback)
-            </span>
-          )}
+        </div>
+        <div
+          className="mt-1 text-[10px] uppercase tracking-wider"
+          style={{
+            color: fx.isFallback || fx.isStale
+              ? "var(--negative)"
+              : "var(--muted)",
+          }}
+        >
+          {fxLabel}
         </div>
       </SummaryCard>
 

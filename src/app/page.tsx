@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
 import { fetchLivePrices, lookupPrice } from "@/lib/prices";
-import { fetchFxRatesWithFallback } from "@/lib/fx";
+import { fetchFxRates } from "@/lib/fx";
 import { PositionForm } from "@/components/PositionForm";
 import { PositionsTable } from "@/components/PositionsTable";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
@@ -15,7 +15,7 @@ export default async function Home() {
 
   const [priceMap, fxResult] = await Promise.all([
     fetchLivePrices(positions),
-    fetchFxRatesWithFallback(),
+    fetchFxRates(),
   ]);
 
   const metrics = positions.map((p) =>
@@ -28,7 +28,7 @@ export default async function Home() {
   const totals = computePortfolioTotals(metrics);
 
   const hasStaleData =
-    fxResult.isFallback || metrics.some((m) => m.livePrice.isFallback);
+    fxResult.isStale || metrics.some((m) => m.livePrice.isStale);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
@@ -41,7 +41,7 @@ export default async function Home() {
         </div>
         {hasStaleData && (
           <span className="text-xs text-[color:var(--muted)]">
-            Some prices are unavailable and shown as n/a
+            Some data is stale or unavailable
           </span>
         )}
       </header>
@@ -49,8 +49,7 @@ export default async function Home() {
       <PortfolioSummary
         totals={totals}
         positionCount={positions.length}
-        fxRates={fxResult.rates}
-        fxIsFallback={fxResult.isFallback}
+        fx={fxResult}
       />
 
       <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">

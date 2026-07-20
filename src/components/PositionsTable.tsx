@@ -5,6 +5,7 @@ import type { PositionMetrics } from "@/lib/finance";
 import {
   formatCurrency,
   formatDate,
+  formatFetchedAt,
   formatQuantity,
   formatSignedCurrency,
   formatSignedPercent,
@@ -118,7 +119,21 @@ export function PositionsTable({ metrics }: { metrics: PositionMetrics[] }) {
                   {m.livePrice.isFallback ? (
                     <span className="text-[color:var(--muted)]">n/a</span>
                   ) : (
-                    formatCurrency(m.livePrice.price, m.livePrice.currency)
+                    <>
+                      <div>
+                        {formatCurrency(m.livePrice.price, m.livePrice.currency)}
+                      </div>
+                      <div
+                        className="text-[10px]"
+                        style={{
+                          color: m.livePrice.isStale
+                            ? "var(--negative)"
+                            : "var(--muted)",
+                        }}
+                      >
+                        {formatFetchedAt(m.livePrice.fetchedAt)}
+                      </div>
+                    </>
                   )}
                 </td>
                 <td className="py-3 text-right tabular-nums font-medium">
