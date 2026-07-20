@@ -27,12 +27,12 @@ export function DashboardBody({ metrics }: { metrics: PositionMetrics[] }) {
   return (
     <>
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-        <div className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <div className="fade-up-delay-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
           <SectionHeader icon={PieChart} title="Allocation" hint="Share of total value" />
           <AllocationDonut metrics={metrics} />
         </div>
 
-        <div className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <div className="fade-up-delay-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <div className="section-label flex items-center gap-1.5">
@@ -58,8 +58,11 @@ export function DashboardBody({ metrics }: { metrics: PositionMetrics[] }) {
             </div>
           </div>
 
-          {tvSymbol ? (
-            <MarketWidget symbol={tvSymbol} />
+          {tvSymbol && selected ? (
+            <MarketWidget
+              symbol={tvSymbol}
+              displayName={selected.position.name}
+            />
           ) : (
             <div className="flex aspect-[16/9] items-center justify-center rounded-xl border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
               No market chart for cash-only portfolios.
@@ -68,7 +71,7 @@ export function DashboardBody({ metrics }: { metrics: PositionMetrics[] }) {
         </div>
       </section>
 
-      <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+      <section className="fade-up-delay-3 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <SectionHeader
             icon={Wallet2}

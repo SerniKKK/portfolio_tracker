@@ -63,7 +63,7 @@ export default async function Home() {
           fx={fxResult}
         />
 
-        <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+        <section className="fade-up-delay-1 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="section-label flex items-center gap-1.5">
               <Activity className="size-3" />

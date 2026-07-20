@@ -7,6 +7,7 @@ import {
   formatSignedPercent,
 } from "@/lib/format";
 import { ArrowUpRight, ArrowDownRight, Layers, Wallet, Percent, Hash } from "lucide-react";
+import { AnimatedHero } from "./AnimatedHero";
 
 export function HeroSummary({
   totals,
@@ -28,12 +29,13 @@ export function HeroSummary({
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div>
           <div className="section-label">Total portfolio value</div>
-          <div className="mt-3 flex items-baseline gap-4">
-            <div className="tabular font-serif text-5xl leading-none tracking-tight sm:text-6xl md:text-7xl">
-              {formatCurrency(totals.totalValuePLN, "PLN")}
-            </div>
+          <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+            <span className="tabular text-2xl font-light text-[color:var(--muted-strong)]">
+              PLN
+            </span>
+            <AnimatedHero value={totals.totalValuePLN} />
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[color:var(--muted)]">
+          <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[color:var(--muted)]">
             <span className="tabular">
               ≈ {formatCompactCurrency(eurValue, "EUR")}
             </span>
@@ -45,7 +47,7 @@ export function HeroSummary({
         </div>
 
         <div
-          className="flex items-center gap-2 self-start rounded-full border px-3 py-1.5 text-sm lg:self-end"
+          className="flex items-center gap-2 self-start rounded-full border px-3.5 py-2 text-sm lg:self-end"
           style={{
             borderColor: `${pnlColor}30`,
             backgroundColor: `${pnlColor}12`,
@@ -56,7 +58,7 @@ export function HeroSummary({
           <span className="tabular font-medium">
             {formatSignedCompact(totals.totalPnlPLN, "PLN")}
           </span>
-          <span className="text-[color:var(--border-strong)]">·</span>
+          <span className="opacity-40">·</span>
           <span className="tabular">{formatSignedPercent(totals.totalPnlPct)}</span>
         </div>
       </div>

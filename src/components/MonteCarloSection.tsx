@@ -46,7 +46,7 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
       : 0;
 
   return (
-    <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+    <section className="fade-up-delay-4 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
       <div className="mb-6 flex items-start gap-3">
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface-elevated)]">
           <Sparkles className="size-4 text-[color:var(--accent-cream)]" />
