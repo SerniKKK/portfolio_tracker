@@ -53,7 +53,7 @@ per-ticker rate to at most one call per TTL window, independent of traffic.
 - [x] Stage 3. Real market data (CoinGecko, Finnhub) and NBP FX rates
 - [x] Stage 4. Price and FX cache in DB with tiered fallback
 - [x] Stage 4.5. Auth (Google) and multi-user with email allowlist
-- [ ] Stage 5. Allocation donut + TradingView widget for the selected position
+- [x] Stage 5. Allocation donut + TradingView widget for the selected position
 - [ ] Stage 6. Daily snapshots per user + portfolio value chart (Lightweight Charts)
 - [ ] Stage 6.5. Monte Carlo scenario simulator
 - [ ] Stage 7. Design polish + responsiveness
