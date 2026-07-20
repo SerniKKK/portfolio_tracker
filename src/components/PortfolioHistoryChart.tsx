@@ -114,7 +114,7 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
   }
 
   return (
-    <div>
+    <div className="scale-in">
       <div ref={containerRef} className="h-[320px] w-full" />
       <div className="mt-3 flex items-center justify-end gap-5 text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
         <span className="flex items-center gap-1.5">

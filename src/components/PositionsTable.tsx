@@ -120,7 +120,8 @@ export function PositionsTable({
                 onClick={
                   clickable ? () => onSelect?.(m.position.id) : undefined
                 }
-                className={`group border-b border-[color:var(--border)]/60 transition-colors ${
+                data-selected={isSelected}
+                className={`group row-glow border-b border-[color:var(--border)]/60 ${
                   clickable ? "cursor-pointer" : ""
                 } ${
                   isSelected

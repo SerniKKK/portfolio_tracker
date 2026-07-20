@@ -67,8 +67,8 @@ export function MarketWidget({
   return (
     <div
       ref={containerRef}
-      className="tradingview-widget-container aspect-[4/3] w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] transition-opacity sm:aspect-[16/10] lg:aspect-[16/9]"
       key={symbol}
+      className="tradingview-widget-container scale-in aspect-[4/3] w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] sm:aspect-[16/10] lg:aspect-[16/9]"
     />
   );
 }

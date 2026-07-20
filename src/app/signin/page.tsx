@@ -30,7 +30,7 @@ export default async function SignInPage({
           </div>
         </div>
 
-        <h1 className="font-serif text-4xl leading-tight tracking-tight">
+        <h1 className="text-3xl font-medium leading-tight tracking-tight">
           Welcome back.
         </h1>
         <p className="mt-3 text-sm text-[color:var(--muted-strong)]">

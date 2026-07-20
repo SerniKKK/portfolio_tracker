@@ -53,7 +53,7 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
         </div>
         <div>
           <div className="section-label">Monte Carlo scenarios</div>
-          <div className="mt-1 font-serif text-2xl tracking-tight">
+          <div className="mt-1 text-xl font-medium tracking-tight">
             Where could this be in {horizonYears} years?
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-[color:var(--muted)]">
@@ -193,7 +193,7 @@ function PctRow({
         {label}
       </span>
       <span
-        className={`tabular ${accent ? "font-serif text-lg text-[color:var(--accent-gold)]" : ""}`}
+        className={`tabular ${accent ? "text-lg font-medium text-[color:var(--accent-gold)]" : ""}`}
       >
         {value}
       </span>

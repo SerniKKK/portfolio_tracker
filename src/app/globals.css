@@ -85,7 +85,6 @@
   --radius: var(--radius);
 
   --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-instrument-serif);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -107,11 +106,6 @@ body {
 }
 
 /* Typography helpers */
-.font-serif {
-  font-family: var(--font-serif), Georgia, serif;
-  font-feature-settings: "ss01", "ss02";
-}
-
 .tabular {
   font-variant-numeric: tabular-nums lining-nums;
 }
@@ -185,6 +179,57 @@ body {
 }
 .pulse-soft {
   animation: pulse-soft 2.4s ease-in-out infinite;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.scale-in {
+  animation: scale-in 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: center;
+}
+
+/* Focus glow for form inputs — gold ring on focus */
+[data-slot="input"]:focus-visible,
+[data-slot="select-trigger"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="date"]:focus-visible,
+input[type="text"]:focus-visible {
+  border-color: hsl(38 45% 62% / 0.5) !important;
+  box-shadow: 0 0 0 3px hsl(38 45% 62% / 0.15) !important;
+  outline: none !important;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
+}
+
+/* Row glow — subtle left border accent on hover */
+.row-glow {
+  position: relative;
+  transition: background-color 180ms ease;
+}
+.row-glow::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  background: var(--accent-gold);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  border-radius: 0 2px 2px 0;
+}
+.row-glow:hover::before {
+  opacity: 0.7;
+}
+.row-glow[data-selected="true"]::before {
+  opacity: 1;
 }
 
 /* Global text selection */

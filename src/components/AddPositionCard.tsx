@@ -30,7 +30,7 @@ export function AddPositionButton() {
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle className="font-serif text-2xl">
+          <SheetTitle className="text-xl font-medium tracking-tight">
             New position
           </SheetTitle>
           <SheetDescription>
