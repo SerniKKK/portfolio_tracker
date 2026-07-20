@@ -37,7 +37,15 @@ const COLUMNS: { key: SortKey; label: string; align?: "right" }[] = [
   { key: "purchaseDate", label: "Bought" },
 ];
 
-export function PositionsTable({ metrics }: { metrics: PositionMetrics[] }) {
+export function PositionsTable({
+  metrics,
+  selectedId,
+  onSelect,
+}: {
+  metrics: PositionMetrics[];
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
+}) {
   const [sortKey, setSortKey] = useState<SortKey>("currentValuePLN");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
@@ -92,10 +100,21 @@ export function PositionsTable({ metrics }: { metrics: PositionMetrics[] }) {
         <tbody>
           {sorted.map((m) => {
             const positive = m.pnlPLN >= 0;
+            const isSelected = selectedId === m.position.id;
+            const clickable = Boolean(onSelect) && m.position.assetType !== "CASH";
             return (
               <tr
                 key={m.position.id}
-                className="border-b border-[color:var(--border)]/60 transition hover:bg-[color:var(--surface-2)]/40"
+                onClick={
+                  clickable ? () => onSelect?.(m.position.id) : undefined
+                }
+                className={`border-b border-[color:var(--border)]/60 transition ${
+                  clickable ? "cursor-pointer" : ""
+                } ${
+                  isSelected
+                    ? "bg-[color:var(--surface-2)]/60"
+                    : "hover:bg-[color:var(--surface-2)]/40"
+                }`}
               >
                 <td className="py-3">
                   <div className="font-medium">{m.position.name}</div>

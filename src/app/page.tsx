@@ -5,7 +5,7 @@ import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
 import { fetchLivePrices, lookupPrice } from "@/lib/prices";
 import { fetchFxRates } from "@/lib/fx";
 import { PositionForm } from "@/components/PositionForm";
-import { PositionsTable } from "@/components/PositionsTable";
+import { DashboardBody } from "@/components/DashboardBody";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
 import { UserMenu } from "@/components/UserMenu";
 
@@ -65,22 +65,7 @@ export default async function Home() {
         <PositionForm />
       </section>
 
-      <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold">Positions</h2>
-          <span className="text-xs text-[color:var(--muted)]">
-            {positions.length} {positions.length === 1 ? "entry" : "entries"}
-          </span>
-        </div>
-
-        {positions.length === 0 ? (
-          <p className="text-sm text-[color:var(--muted)]">
-            No positions yet. Add your first one above.
-          </p>
-        ) : (
-          <PositionsTable metrics={metrics} />
-        )}
-      </section>
+      <DashboardBody metrics={metrics} />
     </main>
   );
 }
