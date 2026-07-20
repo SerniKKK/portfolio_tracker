@@ -1,0 +1,57 @@
+// Prisma schema for Portfolio Tracker
+// Local dev: SQLite. Production: swap provider to postgresql before deploy.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetType {
+  STOCK
+  ETF
+  CRYPTO
+  CASH
+}
+
+enum Currency {
+  PLN
+  EUR
+  USD
+}
+
+model Position {
+  id               String    @id @default(cuid())
+  name             String
+  ticker           String
+  assetType        AssetType
+  quantity         Float
+  purchasePrice    Float
+  purchaseCurrency Currency
+  purchaseDate     DateTime
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([ticker])
+}
+
+model PriceCache {
+  id        String   @id @default(cuid())
+  ticker    String
+  price     Float
+  currency  Currency
+  fetchedAt DateTime @default(now())
+
+  @@unique([ticker, currency])
+}
+
+model PortfolioSnapshot {
+  id            String   @id @default(cuid())
+  date          DateTime @unique
+  totalValuePLN Float
+  totalCostPLN  Float
+  createdAt     DateTime @default(now())
+}

@@ -77,7 +77,7 @@ Ważne, żeby nie rozjechał się zakres:
 - Czytelna typografia, dużo powietrza, karty z zaokrągleniami około 14 px
 - Kwoty zawsze formatowane z separatorem tysięcy i symbolem waluty
 - Responsywność: ma działać na telefonie
-- Interfejs po polsku
+- Interfejs po angielsku (aktualizacja: cały projekt jest po angielsku, wliczajac UI, kod, komentarze i commity)
 - W tekstach interfejsu nie używamy em dashów
 
 ---
@@ -127,6 +127,6 @@ Projekt uznajemy za skończony, gdy:
 
 - Zanim zaczniesz pisać kod, zadaj pytania o rzeczy niejasne i zaproponuj plan
 - Pracuj etapami, po każdym etapie pokaż działający efekt
-- Pisz czytelne komunikaty commitów po polsku, bez polskich znaków
+- Pisz czytelne komunikaty commitów po angielsku (aktualizacja: caly projekt po angielsku)
 - Logikę obliczeń finansowych (przeliczanie walut, zysk, procenty) wydziel do osobnych funkcji i pokryj testami
 - Klucze API trzymaj w pliku .env.local, który jest w .gitignore
