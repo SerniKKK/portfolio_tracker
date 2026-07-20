@@ -3,13 +3,15 @@
 import { useMemo, useState } from "react";
 import type { PositionMetrics } from "@/lib/finance";
 import {
+  formatCompactCurrency,
   formatCurrency,
   formatDate,
   formatFetchedAt,
   formatQuantity,
-  formatSignedCurrency,
+  formatSignedCompact,
   formatSignedPercent,
 } from "@/lib/format";
+import { colorForKey } from "@/lib/palette";
 import { DeletePositionButton } from "./DeletePositionButton";
 
 type SortKey =
@@ -26,14 +28,14 @@ type SortKey =
 type SortDir = "asc" | "desc";
 
 const COLUMNS: { key: SortKey; label: string; align?: "right" }[] = [
-  { key: "name", label: "Name" },
+  { key: "name", label: "Position" },
   { key: "assetType", label: "Type" },
   { key: "quantity", label: "Qty", align: "right" },
-  { key: "purchasePrice", label: "Buy", align: "right" },
-  { key: "currentPrice", label: "Now", align: "right" },
-  { key: "currentValuePLN", label: "Value (PLN)", align: "right" },
-  { key: "pnlPLN", label: "P/L (PLN)", align: "right" },
-  { key: "pnlPct", label: "P/L %", align: "right" },
+  { key: "purchasePrice", label: "Avg buy", align: "right" },
+  { key: "currentPrice", label: "Price", align: "right" },
+  { key: "currentValuePLN", label: "Value", align: "right" },
+  { key: "pnlPLN", label: "P/L", align: "right" },
+  { key: "pnlPct", label: "%", align: "right" },
   { key: "purchaseDate", label: "Bought" },
 ];
 
@@ -74,15 +76,15 @@ export function PositionsTable({
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px] text-sm">
+    <div className="-mx-2 overflow-x-auto sm:mx-0">
+      <table className="w-full min-w-[820px] text-sm">
         <thead>
-          <tr className="border-b border-[color:var(--border)] text-xs uppercase tracking-wider text-[color:var(--muted)]">
+          <tr className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
             {COLUMNS.map((c) => (
               <th
                 key={c.key}
                 onClick={() => toggleSort(c.key)}
-                className={`cursor-pointer select-none py-3 font-medium transition hover:text-[color:var(--foreground)] ${
+                className={`cursor-pointer select-none border-b border-[color:var(--border)] py-2.5 px-2 font-medium transition hover:text-[color:var(--foreground)] ${
                   c.align === "right" ? "text-right" : "text-left"
                 }`}
               >
@@ -94,7 +96,7 @@ export function PositionsTable({
                 )}
               </th>
             ))}
-            <th className="py-3 text-right"></th>
+            <th className="border-b border-[color:var(--border)] py-2.5 px-2 text-right" />
           </tr>
         </thead>
         <tbody>
@@ -102,39 +104,50 @@ export function PositionsTable({
             const positive = m.pnlPLN >= 0;
             const isSelected = selectedId === m.position.id;
             const clickable = Boolean(onSelect) && m.position.assetType !== "CASH";
+            const dotColor = colorForKey(m.position.ticker);
             return (
               <tr
                 key={m.position.id}
                 onClick={
                   clickable ? () => onSelect?.(m.position.id) : undefined
                 }
-                className={`border-b border-[color:var(--border)]/60 transition ${
+                className={`border-b border-[color:var(--border)]/40 transition ${
                   clickable ? "cursor-pointer" : ""
                 } ${
                   isSelected
-                    ? "bg-[color:var(--surface-2)]/60"
+                    ? "bg-[color:var(--surface-2)]/70"
                     : "hover:bg-[color:var(--surface-2)]/40"
                 }`}
               >
-                <td className="py-3">
-                  <div className="font-medium">{m.position.name}</div>
-                  <div className="text-xs text-[color:var(--muted)]">
-                    {m.position.ticker}
+                <td className="py-2.5 px-2">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="h-2 w-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: dotColor }}
+                    />
+                    <div className="min-w-0">
+                      <div className="truncate font-medium">
+                        {m.position.name}
+                      </div>
+                      <div className="text-[11px] text-[color:var(--muted)]">
+                        {m.position.ticker}
+                      </div>
+                    </div>
                   </div>
                 </td>
-                <td className="py-3">
+                <td className="py-2.5 px-2">
                   <AssetTypeBadge type={m.position.assetType} />
                 </td>
-                <td className="py-3 text-right tabular-nums">
+                <td className="tabular py-2.5 px-2 text-right">
                   {formatQuantity(m.position.quantity)}
                 </td>
-                <td className="py-3 text-right tabular-nums">
+                <td className="tabular py-2.5 px-2 text-right text-[color:var(--muted)]">
                   {formatCurrency(
                     m.position.purchasePrice,
                     m.position.purchaseCurrency
                   )}
                 </td>
-                <td className="py-3 text-right tabular-nums">
+                <td className="tabular py-2.5 px-2 text-right">
                   {m.livePrice.isFallback ? (
                     <span className="text-[color:var(--muted)]">n/a</span>
                   ) : (
@@ -155,29 +168,32 @@ export function PositionsTable({
                     </>
                   )}
                 </td>
-                <td className="py-3 text-right tabular-nums font-medium">
-                  {formatCurrency(m.currentValuePLN, "PLN")}
+                <td className="tabular py-2.5 px-2 text-right font-medium">
+                  {formatCompactCurrency(m.currentValuePLN, "PLN")}
                 </td>
                 <td
-                  className="py-3 text-right tabular-nums"
+                  className="tabular py-2.5 px-2 text-right"
                   style={{
                     color: positive ? "var(--positive)" : "var(--negative)",
                   }}
                 >
-                  {formatSignedCurrency(m.pnlPLN, "PLN")}
+                  {formatSignedCompact(m.pnlPLN, "PLN")}
                 </td>
                 <td
-                  className="py-3 text-right tabular-nums"
+                  className="tabular py-2.5 px-2 text-right"
                   style={{
                     color: positive ? "var(--positive)" : "var(--negative)",
                   }}
                 >
                   {formatSignedPercent(m.pnlPct)}
                 </td>
-                <td className="py-3 text-[color:var(--muted)]">
+                <td className="py-2.5 px-2 text-[11px] text-[color:var(--muted)]">
                   {formatDate(m.position.purchaseDate)}
                 </td>
-                <td className="py-3 text-right">
+                <td
+                  className="py-2.5 px-2 text-right"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <DeletePositionButton id={m.position.id} />
                 </td>
               </tr>
@@ -212,23 +228,31 @@ function getSortValue(m: PositionMetrics, key: SortKey): string | number {
   }
 }
 
-function AssetTypeBadge({ type }: { type: string }) {
-  const color = {
-    STOCK: "var(--teal)",
-    ETF: "var(--gold)",
-    CRYPTO: "var(--teal)",
-    CASH: "var(--muted)",
-  }[type] ?? "var(--muted)";
+const ASSET_TYPE_STYLE: Record<
+  string,
+  { color: string; label: string }
+> = {
+  STOCK: { color: "var(--teal)", label: "Stock" },
+  ETF: { color: "var(--gold)", label: "ETF" },
+  CRYPTO: { color: "#c084fc", label: "Crypto" },
+  CASH: { color: "var(--muted)", label: "Cash" },
+};
 
+function AssetTypeBadge({ type }: { type: string }) {
+  const s = ASSET_TYPE_STYLE[type] ?? {
+    color: "var(--muted)",
+    label: type,
+  };
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-md border border-[color:var(--border)] bg-[color:var(--surface-2)] px-2 py-0.5 text-xs"
+      className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
+      style={{ color: s.color }}
     >
       <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ backgroundColor: color }}
+        className="h-1 w-1 rounded-full"
+        style={{ backgroundColor: s.color }}
       />
-      {type}
+      {s.label}
     </span>
   );
 }

@@ -54,6 +54,37 @@ export function formatQuantity(value: number): string {
   return quantityFormatter.format(value);
 }
 
+// Compact currency for headline figures (245.9k PLN, 1.2M PLN, 3.4B PLN).
+// Uses ISO currency code as a small prefix instead of a symbol so PLN reads clearly.
+export function formatCompactCurrency(value: number, currency: Currency): string {
+  if (!Number.isFinite(value)) return "-";
+  const abs = Math.abs(value);
+  let scaled = value;
+  let suffix = "";
+  if (abs >= 1_000_000_000) {
+    scaled = value / 1_000_000_000;
+    suffix = "B";
+  } else if (abs >= 1_000_000) {
+    scaled = value / 1_000_000;
+    suffix = "M";
+  } else if (abs >= 10_000) {
+    scaled = value / 1_000;
+    suffix = "k";
+  }
+  const digits = suffix === "" ? 0 : Math.abs(scaled) < 10 ? 2 : 1;
+  const num = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: suffix === "" ? 0 : digits,
+    maximumFractionDigits: suffix === "" ? 0 : digits,
+  }).format(scaled);
+  return `${num}${suffix} ${currency}`;
+}
+
+export function formatSignedCompact(value: number, currency: Currency): string {
+  if (!Number.isFinite(value)) return "-";
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${formatCompactCurrency(value, currency)}`;
+}
+
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "short",

@@ -3,19 +3,7 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { PositionMetrics } from "@/lib/finance";
 import { formatCurrency, formatPercent } from "@/lib/format";
-
-const POSITION_COLORS = [
-  "#2dd4bf", // teal
-  "#d4af37", // gold
-  "#60a5fa", // blue
-  "#c084fc", // purple
-  "#f87171", // red
-  "#4ade80", // green
-  "#fb923c", // orange
-  "#f472b6", // pink
-  "#a3e635", // lime
-  "#22d3ee", // cyan
-];
+import { colorForKey } from "@/lib/palette";
 
 const ASSET_TYPE_COLORS: Record<string, string> = {
   STOCK: "#2dd4bf",
@@ -32,10 +20,10 @@ export function AllocationDonut({ metrics }: { metrics: PositionMetrics[] }) {
   const byPosition: Slice[] = metrics
     .filter((m) => m.currentValuePLN > 0)
     .sort((a, b) => b.currentValuePLN - a.currentValuePLN)
-    .map((m, i) => ({
+    .map((m) => ({
       name: m.position.name,
       value: m.currentValuePLN,
-      color: POSITION_COLORS[i % POSITION_COLORS.length],
+      color: colorForKey(m.position.ticker),
     }));
 
   const byTypeMap = new Map<string, number>();
@@ -56,14 +44,14 @@ export function AllocationDonut({ metrics }: { metrics: PositionMetrics[] }) {
 
   if (totalPLN <= 0 || byPosition.length === 0) {
     return (
-      <div className="flex h-[420px] items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] text-sm text-[color:var(--muted)]">
+      <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
         No allocation to show yet.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] p-4 sm:grid-cols-2">
+    <div className="grid gap-6 sm:grid-cols-2">
       <Chart title="By position" data={byPosition} totalPLN={totalPLN} />
       <Chart title="By asset type" data={byType} totalPLN={totalPLN} />
     </div>
@@ -81,9 +69,7 @@ function Chart({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="mb-2 text-xs uppercase tracking-wider text-[color:var(--muted)]">
-        {title}
-      </div>
+      <div className="section-title mb-3">{title}</div>
       <div className="h-[180px] w-full">
         <ResponsiveContainer>
           <PieChart>

@@ -107,16 +107,16 @@ export function MonteCarloChart({
   }, [result, startDate]);
 
   return (
-    <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] p-3">
+    <div>
       <div ref={containerRef} className="h-[320px] w-full" />
-      <div className="mt-2 flex items-center justify-end gap-4 text-[11px] text-[color:var(--muted)]">
+      <div className="mt-3 flex items-center justify-end gap-4 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
         <span className="flex items-center gap-1.5">
           <span className="h-2 w-3 rounded-sm bg-[color:var(--teal)]/30" />
-          p10 – p90 band
+          p10 – p90
         </span>
         <span className="flex items-center gap-1.5">
           <span className="h-0.5 w-3 bg-[color:var(--gold)]" />
-          Median (p50)
+          median
         </span>
       </div>
     </div>

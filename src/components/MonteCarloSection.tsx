@@ -39,16 +39,13 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
   const high = result.p90[last] ?? 0;
 
   return (
-    <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
-      <div className="mb-4 flex items-baseline justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold">Monte Carlo scenarios</h2>
-          <p className="mt-1 max-w-2xl text-xs text-[color:var(--muted)]">
-            This is a simulation under your assumptions, not a forecast or
-            investment advice. Past returns and volatility do not guarantee
-            future results.
-          </p>
-        </div>
+    <section className="card">
+      <div className="mb-4">
+        <h2 className="section-title">Monte Carlo scenarios</h2>
+        <p className="mt-1 max-w-2xl text-xs text-[color:var(--muted)]">
+          Simulation under your assumptions, not a forecast or investment
+          advice. Past returns and volatility do not guarantee future results.
+        </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
@@ -91,33 +88,31 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
             min={0}
             step={1}
           />
-          <div className="rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-2)] p-3 text-xs">
-            <div className="mb-2 text-[color:var(--muted)]">
+          <div className="card-tight text-xs">
+            <div className="mb-2 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
               Value in {horizonYears} years
             </div>
-            <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline justify-between py-0.5">
               <span className="text-[color:var(--muted)]">p10</span>
-              <span className="tabular-nums">{formatCurrency(low, "PLN")}</span>
+              <span className="tabular">{formatCurrency(low, "PLN")}</span>
             </div>
-            <div className="flex items-baseline justify-between font-semibold text-[color:var(--gold)]">
+            <div className="flex items-baseline justify-between py-0.5 text-sm font-semibold text-[color:var(--gold)]">
               <span>p50</span>
-              <span className="tabular-nums">
-                {formatCurrency(median, "PLN")}
-              </span>
+              <span className="tabular">{formatCurrency(median, "PLN")}</span>
             </div>
-            <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline justify-between py-0.5">
               <span className="text-[color:var(--muted)]">p90</span>
-              <span className="tabular-nums">
-                {formatCurrency(high, "PLN")}
-              </span>
+              <span className="tabular">{formatCurrency(high, "PLN")}</span>
             </div>
             <div className="mt-2 border-t border-[color:var(--border)] pt-2 text-[color:var(--muted)]">
               CAGR (median):{" "}
-              {formatPercent(
-                initialValue > 0
-                  ? Math.pow(median / initialValue, 1 / horizonYears) - 1
-                  : 0
-              )}
+              <span className="tabular text-[color:var(--foreground)]">
+                {formatPercent(
+                  initialValue > 0
+                    ? Math.pow(median / initialValue, 1 / horizonYears) - 1
+                    : 0
+                )}
+              </span>
             </div>
           </div>
         </div>

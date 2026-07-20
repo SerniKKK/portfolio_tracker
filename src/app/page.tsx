@@ -5,12 +5,12 @@ import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
 import { fetchLivePrices, lookupPrice } from "@/lib/prices";
 import { fetchFxRates } from "@/lib/fx";
 import { getSnapshotsForUser, upsertDailySnapshot } from "@/lib/snapshots";
-import { PositionForm } from "@/components/PositionForm";
+import { AppHeader } from "@/components/AppHeader";
+import { HeroSummary } from "@/components/HeroSummary";
+import { AddPositionCard } from "@/components/AddPositionCard";
 import { DashboardBody } from "@/components/DashboardBody";
-import { PortfolioSummary } from "@/components/PortfolioSummary";
 import { PortfolioHistoryChart } from "@/components/PortfolioHistoryChart";
 import { MonteCarloSection } from "@/components/MonteCarloSection";
-import { UserMenu } from "@/components/UserMenu";
 
 export const dynamic = "force-dynamic";
 
@@ -53,51 +53,37 @@ export default async function Home() {
     totalCostPLN: s.totalCostPLN,
   }));
 
-  const hasStaleData =
-    fxResult.isStale || metrics.some((m) => m.livePrice.isStale);
-
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
-      <header className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-[color:var(--teal)]" />
-          <span className="text-xs uppercase tracking-widest text-[color:var(--muted)]">
-            Portfolio Tracker
-          </span>
-          {hasStaleData && (
-            <span className="ml-2 text-xs text-[color:var(--muted)]">
-              Some data is stale or unavailable
+    <>
+      <AppHeader fx={fxResult} />
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+        <HeroSummary
+          totals={totals}
+          positionCount={positions.length}
+          fx={fxResult}
+        />
+
+        <section className="card">
+          <div className="mb-4 flex items-baseline justify-between">
+            <h2 className="section-title">Portfolio value history</h2>
+            <span className="text-[11px] text-[color:var(--muted)]">
+              {historyData.length}{" "}
+              {historyData.length === 1 ? "snapshot" : "snapshots"} · daily
             </span>
-          )}
-        </div>
-        <UserMenu />
-      </header>
+          </div>
+          <PortfolioHistoryChart data={historyData} />
+        </section>
 
-      <PortfolioSummary
-        totals={totals}
-        positionCount={positions.length}
-        fx={fxResult}
-      />
+        <DashboardBody metrics={metrics} />
 
-      <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold">Portfolio value history</h2>
-          <span className="text-xs text-[color:var(--muted)]">
-            {historyData.length}{" "}
-            {historyData.length === 1 ? "snapshot" : "snapshots"}
-          </span>
-        </div>
-        <PortfolioHistoryChart data={historyData} />
-      </section>
+        <AddPositionCard />
 
-      <MonteCarloSection initialValue={totals.totalValuePLN} />
+        <MonteCarloSection initialValue={totals.totalValuePLN} />
 
-      <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
-        <h2 className="mb-4 text-lg font-semibold">Add position</h2>
-        <PositionForm />
-      </section>
-
-      <DashboardBody metrics={metrics} />
-    </main>
+        <footer className="pt-4 text-center text-[10px] text-[color:var(--muted)]">
+          Data from CoinGecko, Finnhub, and NBP. Cached in DB. Not investment advice.
+        </footer>
+      </main>
+    </>
   );
 }

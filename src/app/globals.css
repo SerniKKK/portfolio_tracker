@@ -40,4 +40,51 @@ body {
     radial-gradient(1200px 600px at 10% -10%, rgba(45, 212, 191, 0.06), transparent 60%),
     radial-gradient(900px 500px at 100% 0%, rgba(212, 175, 55, 0.05), transparent 60%);
   background-attachment: fixed;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Reusable card utility */
+.card {
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--surface) 78%, transparent);
+  padding: 1.25rem;
+}
+@media (min-width: 640px) {
+  .card { padding: 1.5rem; }
+}
+
+.card-tight {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  padding: 1rem;
+}
+
+/* Hairline top accent for cards */
+.card-accent {
+  position: relative;
+  overflow: hidden;
+}
+.card-accent::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  opacity: 0.6;
+}
+
+/* Section heading */
+.section-title {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
 }

@@ -44,7 +44,7 @@ export function MarketWidget({ symbol }: { symbol: string }) {
   return (
     <div
       ref={containerRef}
-      className="tradingview-widget-container h-[420px] w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)]"
+      className="tradingview-widget-container aspect-[4/3] w-full overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-2)] sm:aspect-[16/10] lg:aspect-[16/9]"
     />
   );
 }

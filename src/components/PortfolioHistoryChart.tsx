@@ -93,7 +93,7 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-[280px] items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] text-sm text-[color:var(--muted)]">
+      <div className="flex h-[240px] items-center justify-center rounded-lg border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
         No history yet. A snapshot is taken every day you visit, plus one at
         end of day. Come back tomorrow.
       </div>
@@ -101,15 +101,15 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
   }
 
   return (
-    <div className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] p-3">
+    <div>
       <div ref={containerRef} className="h-[280px] w-full" />
-      <div className="mt-2 flex items-center justify-end gap-4 text-[11px] text-[color:var(--muted)]">
+      <div className="mt-3 flex items-center justify-end gap-4 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
         <span className="flex items-center gap-1.5">
           <span className="h-1.5 w-3 rounded-full bg-[color:var(--teal)]" />
           Value
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-0.5 w-3 border-t border-dashed border-[color:var(--gold)]" />
+          <span className="h-0 w-3 border-t border-dashed border-[color:var(--gold)]" />
           Cost basis
         </span>
       </div>
