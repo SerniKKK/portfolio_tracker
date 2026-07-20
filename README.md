@@ -26,7 +26,7 @@ Personal investment portfolio tracker for stocks, ETFs, crypto and cash across m
 - [x] Stage 1. Prisma schema and positions CRUD
 - [x] Stage 2. Summary card, sortable table, finance and format helpers
 - [x] First deploy to Vercel (Neon Postgres)
-- [ ] Stage 3. Real market data (CoinGecko, Finnhub) and NBP FX rates
+- [x] Stage 3. Real market data (CoinGecko, Finnhub) and NBP FX rates
 - [ ] Stage 4. Price cache with TTL and API error handling
 - [ ] Stage 5. Portfolio structure charts
 - [ ] Stage 6. Daily snapshots and value history chart
