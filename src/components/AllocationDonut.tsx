@@ -51,8 +51,9 @@ export function AllocationDonut({ metrics }: { metrics: PositionMetrics[] }) {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2">
+    <div className="space-y-6">
       <Chart title="By position" data={byPosition} totalPLN={totalPLN} />
+      <div className="hairline" />
       <Chart title="By asset type" data={byType} totalPLN={totalPLN} />
     </div>
   );

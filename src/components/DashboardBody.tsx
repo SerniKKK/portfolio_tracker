@@ -26,7 +26,7 @@ export function DashboardBody({ metrics }: { metrics: PositionMetrics[] }) {
 
   return (
     <>
-      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,340px)_minmax(0,1fr)]">
         <div className="fade-up-delay-2 rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
           <SectionHeader icon={PieChart} title="Allocation" hint="Share of total value" />
           <AllocationDonut metrics={metrics} />
