@@ -1,5 +1,6 @@
-import type { Position, Currency } from "@prisma/client";
-import { getLivePrice, type LivePrice } from "./prices";
+import type { Position } from "@prisma/client";
+import type { LivePrice } from "./prices";
+import type { FxRatesToPLN } from "./fx";
 import { convertToPLN } from "./fx";
 
 export type PositionMetrics = {
@@ -13,14 +14,20 @@ export type PositionMetrics = {
   pnlPct: number;
 };
 
-export function computePositionMetrics(position: Position): PositionMetrics {
-  const livePrice = getLivePrice(position.ticker, position.purchaseCurrency);
-
+export function computePositionMetrics(
+  position: Position,
+  livePrice: LivePrice,
+  rates: FxRatesToPLN
+): PositionMetrics {
   const currentValueNative = livePrice.price * position.quantity;
   const costNative = position.purchasePrice * position.quantity;
 
-  const currentValuePLN = convertToPLN(currentValueNative, livePrice.currency);
-  const costPLN = convertToPLN(costNative, position.purchaseCurrency);
+  const currentValuePLN = convertToPLN(
+    currentValueNative,
+    livePrice.currency,
+    rates
+  );
+  const costPLN = convertToPLN(costNative, position.purchaseCurrency, rates);
 
   const pnlPLN = currentValuePLN - costPLN;
   const pnlPct = costPLN > 0 ? pnlPLN / costPLN : 0;
@@ -69,14 +76,4 @@ export function computePortfolioTotals(
     totalPnlPct,
     byAssetType,
   };
-}
-
-export function totalInCurrency(
-  totalPLN: number,
-  target: Currency,
-  ratesToPLN: Record<Currency, number>
-): number {
-  const rate = ratesToPLN[target];
-  if (rate === 0) return 0;
-  return totalPLN / rate;
 }

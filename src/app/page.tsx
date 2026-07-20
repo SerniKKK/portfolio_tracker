@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
+import { fetchLivePrices, lookupPrice } from "@/lib/prices";
+import { fetchFxRatesWithFallback } from "@/lib/fx";
 import { PositionForm } from "@/components/PositionForm";
 import { PositionsTable } from "@/components/PositionsTable";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
@@ -11,8 +13,22 @@ export default async function Home() {
     orderBy: { createdAt: "desc" },
   });
 
-  const metrics = positions.map(computePositionMetrics);
+  const [priceMap, fxResult] = await Promise.all([
+    fetchLivePrices(positions),
+    fetchFxRatesWithFallback(),
+  ]);
+
+  const metrics = positions.map((p) =>
+    computePositionMetrics(
+      p,
+      lookupPrice(p.ticker, p.purchaseCurrency, priceMap),
+      fxResult.rates
+    )
+  );
   const totals = computePortfolioTotals(metrics);
+
+  const hasStaleData =
+    fxResult.isFallback || metrics.some((m) => m.livePrice.isFallback);
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
@@ -23,12 +39,19 @@ export default async function Home() {
             Portfolio Tracker
           </span>
         </div>
-        <span className="text-xs text-[color:var(--muted)]">
-          Stage 2 · prices and FX are still placeholders
-        </span>
+        {hasStaleData && (
+          <span className="text-xs text-[color:var(--muted)]">
+            Some prices are unavailable and shown as n/a
+          </span>
+        )}
       </header>
 
-      <PortfolioSummary totals={totals} positionCount={positions.length} />
+      <PortfolioSummary
+        totals={totals}
+        positionCount={positions.length}
+        fxRates={fxResult.rates}
+        fxIsFallback={fxResult.isFallback}
+      />
 
       <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
         <h2 className="mb-4 text-lg font-semibold">Add position</h2>

@@ -1,28 +1,33 @@
 import type { Currency } from "@prisma/client";
+import type { FxRatesToPLN } from "./fx/nbp";
 
-// Hardcoded FX rates for Stage 2. Replaced with real NBP rates in Stage 3.
-// All rates are expressed as: 1 unit of FROM = X PLN.
-const HARDCODED_RATES_TO_PLN: Record<Currency, number> = {
-  PLN: 1,
-  EUR: 4.28,
-  USD: 3.95,
-};
+export type { FxRatesToPLN } from "./fx/nbp";
+export { fetchNbpRates, fetchFxRatesWithFallback } from "./fx/nbp";
 
-export function getRateToPLN(from: Currency): number {
-  return HARDCODED_RATES_TO_PLN[from];
+export function convertToPLN(
+  value: number,
+  from: Currency,
+  rates: FxRatesToPLN
+): number {
+  return value * rates[from];
 }
 
-export function convertToPLN(value: number, from: Currency): number {
-  return value * HARDCODED_RATES_TO_PLN[from];
-}
-
-export function convertPLNTo(value: number, to: Currency): number {
-  const rate = HARDCODED_RATES_TO_PLN[to];
+export function convertPLNTo(
+  value: number,
+  to: Currency,
+  rates: FxRatesToPLN
+): number {
+  const rate = rates[to];
   if (rate === 0) return 0;
   return value / rate;
 }
 
-export function convert(value: number, from: Currency, to: Currency): number {
+export function convert(
+  value: number,
+  from: Currency,
+  to: Currency,
+  rates: FxRatesToPLN
+): number {
   if (from === to) return value;
-  return convertPLNTo(convertToPLN(value, from), to);
+  return convertPLNTo(convertToPLN(value, from, rates), to, rates);
 }

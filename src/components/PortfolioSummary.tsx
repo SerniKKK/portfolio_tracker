@@ -1,5 +1,5 @@
 import type { PortfolioTotals } from "@/lib/finance";
-import { convertPLNTo } from "@/lib/fx";
+import { convertPLNTo, type FxRatesToPLN } from "@/lib/fx";
 import {
   formatCurrency,
   formatSignedCurrency,
@@ -9,13 +9,17 @@ import {
 export function PortfolioSummary({
   totals,
   positionCount,
+  fxRates,
+  fxIsFallback,
 }: {
   totals: PortfolioTotals;
   positionCount: number;
+  fxRates: FxRatesToPLN;
+  fxIsFallback: boolean;
 }) {
   const positive = totals.totalPnlPLN >= 0;
-  const eurValue = convertPLNTo(totals.totalValuePLN, "EUR");
-  const usdValue = convertPLNTo(totals.totalValuePLN, "USD");
+  const eurValue = convertPLNTo(totals.totalValuePLN, "EUR", fxRates);
+  const usdValue = convertPLNTo(totals.totalValuePLN, "USD", fxRates);
 
   return (
     <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -25,6 +29,11 @@ export function PortfolioSummary({
         </div>
         <div className="mt-1 text-xs text-[color:var(--muted)]">
           {formatCurrency(eurValue, "EUR")} · {formatCurrency(usdValue, "USD")}
+          {fxIsFallback && (
+            <span className="ml-2 text-[color:var(--negative)]">
+              (FX fallback)
+            </span>
+          )}
         </div>
       </SummaryCard>
 
