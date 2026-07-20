@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
-// TradingView Advanced Real-Time Chart embed. Given enough vertical space
-// (~500px+), the top toolbar renders properly and offers chart-type switching
-// (candles / bars / line / area), interval selection, and indicators, while
-// we keep the left drawing toolbar hidden. Symbol change is locked so users
-// switch by clicking rows in the table.
+const WIDGET_HEIGHT = 460;
+
+// TradingView Advanced Real-Time Chart embed with explicit pixel height.
+// `autosize` misreads container size at hydration and overflows; a fixed
+// numeric height keeps the widget inside its card cleanly.
 export function MarketWidget({
   symbol,
 }: {
@@ -19,7 +19,7 @@ export function MarketWidget({
     const container = containerRef.current;
     if (!container) return;
 
-    container.innerHTML = `<div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>`;
+    container.innerHTML = `<div class="tradingview-widget-container__widget" style="height:${WIDGET_HEIGHT}px;width:100%"></div>`;
 
     const script = document.createElement("script");
     script.src =
@@ -27,12 +27,13 @@ export function MarketWidget({
     script.type = "text/javascript";
     script.async = true;
     script.innerHTML = JSON.stringify({
-      autosize: true,
+      width: "100%",
+      height: WIDGET_HEIGHT,
       symbol,
       interval: "D",
       timezone: "Europe/Warsaw",
       theme: "dark",
-      style: "1", // 1=candles, users can switch via the top toolbar
+      style: "1",
       locale: "en",
       backgroundColor: "rgba(20, 17, 15, 1)",
       gridColor: "rgba(58, 51, 45, 0.35)",
@@ -58,7 +59,8 @@ export function MarketWidget({
     <div
       ref={containerRef}
       key={symbol}
-      className="tradingview-widget-container scale-in h-[500px] w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] sm:h-[540px] lg:h-[560px]"
+      style={{ height: WIDGET_HEIGHT }}
+      className="tradingview-widget-container scale-in w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)]"
     />
   );
 }
