@@ -56,7 +56,7 @@ per-ticker rate to at most one call per TTL window, independent of traffic.
 - [x] Stage 5. Allocation donut + TradingView widget for the selected position
 - [x] Stage 6. Daily snapshots per user + portfolio value chart (Lightweight Charts)
 - [x] Stage 6.5. Monte Carlo scenario simulator
-- [ ] Stage 7. Design polish + responsiveness
+- [x] Stage 7. Design polish + responsiveness
 - [ ] Stage 8. Unit tests, screenshots, final README
 - [ ] Stage 9. PWA (manifest, service worker, icons)
 
