@@ -6,6 +6,7 @@ import {
   formatSignedCompact,
   formatSignedPercent,
 } from "@/lib/format";
+import { ArrowUpRight, ArrowDownRight, Layers, Wallet, Percent, Hash } from "lucide-react";
 
 export function HeroSummary({
   totals,
@@ -20,95 +21,94 @@ export function HeroSummary({
   const eurValue = convertPLNTo(totals.totalValuePLN, "EUR", fx.rates);
   const usdValue = convertPLNTo(totals.totalValuePLN, "USD", fx.rates);
   const pnlColor = positive ? "var(--positive)" : "var(--negative)";
+  const Arrow = positive ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="card card-accent">
-        <div className="section-title">Total value</div>
-        <div className="mt-2 flex items-baseline gap-3">
-          <div className="tabular text-4xl font-semibold tracking-tight sm:text-5xl">
-            {formatCurrency(totals.totalValuePLN, "PLN")}
+    <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div>
+          <div className="section-label">Total portfolio value</div>
+          <div className="mt-3 flex items-baseline gap-4">
+            <div className="tabular font-serif text-5xl leading-none tracking-tight sm:text-6xl md:text-7xl">
+              {formatCurrency(totals.totalValuePLN, "PLN")}
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-[color:var(--muted)]">
+            <span className="tabular">
+              ≈ {formatCompactCurrency(eurValue, "EUR")}
+            </span>
+            <span className="text-[color:var(--border-strong)]">·</span>
+            <span className="tabular">
+              ≈ {formatCompactCurrency(usdValue, "USD")}
+            </span>
           </div>
         </div>
-        <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[color:var(--muted)]">
-          <span className="tabular">
-            ≈ {formatCompactCurrency(eurValue, "EUR")}
-          </span>
-          <span className="tabular">
-            ≈ {formatCompactCurrency(usdValue, "USD")}
-          </span>
-        </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat label="Cost basis" value={formatCurrency(totals.totalCostPLN, "PLN")} />
-          <Stat
-            label="P/L"
-            value={formatSignedCompact(totals.totalPnlPLN, "PLN")}
-            color={pnlColor}
-          />
-          <Stat
-            label="Return"
-            value={formatSignedPercent(totals.totalPnlPct)}
-            color={pnlColor}
-          />
-          <Stat label="Positions" value={String(positionCount)} />
+        <div
+          className="flex items-center gap-2 self-start rounded-full border px-3 py-1.5 text-sm lg:self-end"
+          style={{
+            borderColor: `${pnlColor}30`,
+            backgroundColor: `${pnlColor}12`,
+            color: pnlColor,
+          }}
+        >
+          <Arrow className="size-4" strokeWidth={2.2} />
+          <span className="tabular font-medium">
+            {formatSignedCompact(totals.totalPnlPLN, "PLN")}
+          </span>
+          <span className="text-[color:var(--border-strong)]">·</span>
+          <span className="tabular">{formatSignedPercent(totals.totalPnlPct)}</span>
         </div>
       </div>
 
-      <div className="card">
-        <div className="section-title">Allocation split</div>
-        <ul className="mt-3 space-y-2">
-          {Object.entries(totals.byAssetType)
-            .sort((a, b) => b[1] - a[1])
-            .map(([type, value]) => {
-              const pct = totals.totalValuePLN > 0 ? value / totals.totalValuePLN : 0;
-              return (
-                <li key={type}>
-                  <div className="flex items-baseline justify-between text-xs">
-                    <span className="uppercase tracking-wider text-[color:var(--muted)]">
-                      {type}
-                    </span>
-                    <span className="tabular">
-                      {formatCompactCurrency(value, "PLN")} ·{" "}
-                      {(pct * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[color:var(--surface-2)]">
-                    <div
-                      className="h-full rounded-full bg-[color:var(--teal)]"
-                      style={{ width: `${Math.max(pct * 100, 2)}%` }}
-                    />
-                  </div>
-                </li>
-              );
-            })}
-          {Object.keys(totals.byAssetType).length === 0 && (
-            <li className="text-xs text-[color:var(--muted)]">
-              Add positions to see the allocation split.
-            </li>
-          )}
-        </ul>
+      <div className="hairline my-6" />
+
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+        <Stat
+          icon={Wallet}
+          label="Cost basis"
+          value={formatCurrency(totals.totalCostPLN, "PLN")}
+        />
+        <Stat
+          icon={Percent}
+          label="Total return"
+          value={formatSignedPercent(totals.totalPnlPct)}
+          color={pnlColor}
+        />
+        <Stat
+          icon={Layers}
+          label="Asset types"
+          value={String(Object.keys(totals.byAssetType).length)}
+        />
+        <Stat
+          icon={Hash}
+          label="Positions"
+          value={String(positionCount)}
+        />
       </div>
     </section>
   );
 }
 
 function Stat({
+  icon: Icon,
   label,
   value,
   color,
 }: {
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   color?: string;
 }) {
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
+      <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">
+        <Icon className="size-3" />
         {label}
       </div>
       <div
-        className="tabular mt-1 text-base font-medium"
+        className="tabular mt-1.5 text-lg font-medium"
         style={color ? { color } : undefined}
       >
         {value}

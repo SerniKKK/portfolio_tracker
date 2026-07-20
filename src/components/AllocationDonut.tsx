@@ -2,14 +2,14 @@
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import type { PositionMetrics } from "@/lib/finance";
-import { formatCurrency, formatPercent } from "@/lib/format";
+import { formatCompactCurrency, formatPercent } from "@/lib/format";
 import { colorForKey } from "@/lib/palette";
 
 const ASSET_TYPE_COLORS: Record<string, string> = {
-  STOCK: "#2dd4bf",
-  ETF: "#d4af37",
-  CRYPTO: "#c084fc",
-  CASH: "#8a94a6",
+  STOCK: "hsl(172 40% 55%)",
+  ETF: "hsl(38 45% 62%)",
+  CRYPTO: "hsl(280 30% 65%)",
+  CASH: "hsl(30 5% 55%)",
 };
 
 type Slice = { name: string; value: number; color: string };
@@ -39,12 +39,12 @@ export function AllocationDonut({ metrics }: { metrics: PositionMetrics[] }) {
     .map(([name, value]) => ({
       name,
       value,
-      color: ASSET_TYPE_COLORS[name] ?? "#8a94a6",
+      color: ASSET_TYPE_COLORS[name] ?? "hsl(30 5% 55%)",
     }));
 
   if (totalPLN <= 0 || byPosition.length === 0) {
     return (
-      <div className="flex h-[280px] items-center justify-center rounded-lg border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
+      <div className="flex h-[260px] items-center justify-center rounded-xl border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
         No allocation to show yet.
       </div>
     );
@@ -69,33 +69,36 @@ function Chart({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="section-title mb-3">{title}</div>
-      <div className="h-[180px] w-full">
+      <div className="section-label mb-3">{title}</div>
+      <div className="relative h-[160px] w-full">
         <ResponsiveContainer>
           <PieChart>
             <Pie
               data={data}
               dataKey="value"
               nameKey="name"
-              innerRadius={40}
-              outerRadius={70}
-              stroke="none"
+              innerRadius={45}
+              outerRadius={72}
+              stroke="hsl(30 8% 5.5%)"
+              strokeWidth={2}
+              paddingAngle={1}
             >
               {data.map((slice) => (
                 <Cell key={slice.name} fill={slice.color} />
               ))}
             </Pie>
             <Tooltip
+              cursor={false}
               content={({ payload }) => {
                 const p = payload?.[0];
                 if (!p) return null;
                 const value = Number(p.value);
                 const pct = totalPLN > 0 ? value / totalPLN : 0;
                 return (
-                  <div className="rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] px-3 py-2 text-xs shadow-lg">
+                  <div className="rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface-elevated)] px-3 py-2 text-xs shadow-xl">
                     <div className="font-medium">{String(p.name)}</div>
-                    <div className="text-[color:var(--muted)]">
-                      {formatCurrency(value, "PLN")} · {formatPercent(pct)}
+                    <div className="tabular mt-0.5 text-[color:var(--muted-strong)]">
+                      {formatCompactCurrency(value, "PLN")} · {formatPercent(pct)}
                     </div>
                   </div>
                 );
@@ -104,8 +107,8 @@ function Chart({
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <ul className="mt-3 space-y-1.5 text-xs">
-        {data.slice(0, 6).map((slice) => {
+      <ul className="mt-4 space-y-1.5 text-xs">
+        {data.slice(0, 5).map((slice) => {
           const pct = totalPLN > 0 ? slice.value / totalPLN : 0;
           return (
             <li key={slice.name} className="flex items-center gap-2">
@@ -114,15 +117,15 @@ function Chart({
                 style={{ backgroundColor: slice.color }}
               />
               <span className="flex-1 truncate">{slice.name}</span>
-              <span className="tabular-nums text-[color:var(--muted)]">
-                {formatPercent(pct)}
+              <span className="tabular text-[color:var(--muted)]">
+                {(pct * 100).toFixed(1)}%
               </span>
             </li>
           );
         })}
-        {data.length > 6 && (
+        {data.length > 5 && (
           <li className="text-[color:var(--muted)]">
-            +{data.length - 6} more
+            +{data.length - 5} more
           </li>
         )}
       </ul>

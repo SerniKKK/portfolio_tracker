@@ -1,5 +1,7 @@
 import { signIn, auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
 
@@ -15,20 +17,25 @@ export default async function SignInPage({
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-8 shadow-xl backdrop-blur">
-        <div className="flex items-center gap-3">
-          <div className="h-2.5 w-2.5 rounded-full bg-[color:var(--teal)]" />
-          <span className="text-xs uppercase tracking-widest text-[color:var(--muted)]">
-            Portfolio Tracker
-          </span>
+      <div className="w-full max-w-md rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 shadow-2xl">
+        <div className="mb-6 flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[color:var(--border-strong)] bg-gradient-to-br from-[color:var(--surface-elevated)] to-[color:var(--surface)]">
+            <TrendingUp className="size-4 text-[color:var(--accent-cream)]" strokeWidth={2.2} />
+          </div>
+          <div className="leading-tight">
+            <div className="text-sm font-medium">Portfolio Tracker</div>
+            <div className="text-[10px] uppercase tracking-[0.16em] text-[color:var(--muted)]">
+              Personal
+            </div>
+          </div>
         </div>
 
-        <h1 className="mt-4 text-2xl font-semibold tracking-tight">
-          Sign in
+        <h1 className="font-serif text-4xl leading-tight tracking-tight">
+          Welcome back.
         </h1>
-        <p className="mt-2 text-sm text-[color:var(--muted)]">
-          Access is limited to allowlisted Google accounts. If you should have access
-          and cannot sign in, contact the owner.
+        <p className="mt-3 text-sm text-[color:var(--muted-strong)]">
+          Access is limited to allowlisted Google accounts. If you should have
+          access and cannot sign in, contact the owner.
         </p>
 
         <form
@@ -38,17 +45,17 @@ export default async function SignInPage({
           }}
           className="mt-6"
         >
-          <button
+          <Button
             type="submit"
-            className="flex h-11 w-full items-center justify-center gap-3 rounded-lg bg-white px-4 text-sm font-medium text-black transition hover:bg-white/90"
+            className="h-11 w-full gap-3 bg-[color:var(--accent-cream)] text-[color:var(--background)] hover:bg-[color:var(--accent-cream)]/90"
           >
             <GoogleIcon />
             Continue with Google
-          </button>
+          </Button>
         </form>
 
         {error && (
-          <p className="mt-4 text-sm text-[color:var(--negative)]">
+          <p className="mt-4 rounded-lg border border-[color:var(--negative)]/30 bg-[color:var(--negative)]/10 px-3 py-2 text-sm text-[color:var(--negative)]">
             {error === "AccessDenied"
               ? "This Google account is not on the allowlist."
               : "Sign-in failed. Please try again."}

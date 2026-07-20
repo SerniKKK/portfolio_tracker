@@ -4,6 +4,9 @@ import { useMemo, useState } from "react";
 import { simulate } from "@/lib/simulator";
 import { MonteCarloChart } from "./MonteCarloChart";
 import { formatCurrency, formatPercent } from "@/lib/format";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Sparkles, Info } from "lucide-react";
 
 export function MonteCarloSection({ initialValue }: { initialValue: number }) {
   const [horizonYears, setHorizonYears] = useState(10);
@@ -37,18 +40,31 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
   const median = result.p50[last] ?? 0;
   const low = result.p10[last] ?? 0;
   const high = result.p90[last] ?? 0;
+  const cagr =
+    initialValue > 0
+      ? Math.pow(median / initialValue, 1 / horizonYears) - 1
+      : 0;
 
   return (
-    <section className="card">
-      <div className="mb-4">
-        <h2 className="section-title">Monte Carlo scenarios</h2>
-        <p className="mt-1 max-w-2xl text-xs text-[color:var(--muted)]">
-          Simulation under your assumptions, not a forecast or investment
-          advice. Past returns and volatility do not guarantee future results.
-        </p>
+    <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+      <div className="mb-6 flex items-start gap-3">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[color:var(--border-strong)] bg-[color:var(--surface-elevated)]">
+          <Sparkles className="size-4 text-[color:var(--accent-cream)]" />
+        </div>
+        <div>
+          <div className="section-label">Monte Carlo scenarios</div>
+          <div className="mt-1 font-serif text-2xl tracking-tight">
+            Where could this be in {horizonYears} years?
+          </div>
+          <p className="mt-1 flex items-center gap-1.5 text-xs text-[color:var(--muted)]">
+            <Info className="size-3" />
+            Simulation under your assumptions. Not a forecast, not investment
+            advice.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
         <div className="space-y-4">
           <NumberField
             label="Horizon (years)"
@@ -59,7 +75,7 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
             step={1}
           />
           <NumberField
-            label="Expected annual return (%)"
+            label="Expected return (annual %)"
             value={expectedReturnPct}
             onChange={setExpectedReturnPct}
             min={-20}
@@ -67,7 +83,7 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
             step={0.5}
           />
           <NumberField
-            label="Annual volatility (%)"
+            label="Volatility (annual %)"
             value={volatilityPct}
             onChange={setVolatilityPct}
             min={0}
@@ -88,30 +104,22 @@ export function MonteCarloSection({ initialValue }: { initialValue: number }) {
             min={0}
             step={1}
           />
-          <div className="card-tight text-xs">
-            <div className="mb-2 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
+
+          <div className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-elevated)] p-4 text-sm">
+            <div className="section-label mb-3">
               Value in {horizonYears} years
             </div>
-            <div className="flex items-baseline justify-between py-0.5">
-              <span className="text-[color:var(--muted)]">p10</span>
-              <span className="tabular">{formatCurrency(low, "PLN")}</span>
-            </div>
-            <div className="flex items-baseline justify-between py-0.5 text-sm font-semibold text-[color:var(--gold)]">
-              <span>p50</span>
-              <span className="tabular">{formatCurrency(median, "PLN")}</span>
-            </div>
-            <div className="flex items-baseline justify-between py-0.5">
-              <span className="text-[color:var(--muted)]">p90</span>
-              <span className="tabular">{formatCurrency(high, "PLN")}</span>
-            </div>
-            <div className="mt-2 border-t border-[color:var(--border)] pt-2 text-[color:var(--muted)]">
-              CAGR (median):{" "}
-              <span className="tabular text-[color:var(--foreground)]">
-                {formatPercent(
-                  initialValue > 0
-                    ? Math.pow(median / initialValue, 1 / horizonYears) - 1
-                    : 0
-                )}
+            <PctRow label="p10" value={formatCurrency(low, "PLN")} />
+            <PctRow
+              label="p50"
+              value={formatCurrency(median, "PLN")}
+              accent
+            />
+            <PctRow label="p90" value={formatCurrency(high, "PLN")} />
+            <div className="mt-3 border-t border-[color:var(--border)] pt-3 text-xs text-[color:var(--muted)]">
+              CAGR (median){" "}
+              <span className="tabular ml-1 text-[color:var(--foreground)]">
+                {formatPercent(cagr)}
               </span>
             </div>
           </div>
@@ -138,12 +146,17 @@ function NumberField({
   max?: number;
   step?: number;
 }) {
+  const id = label.replace(/\s+/g, "-").toLowerCase();
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-xs uppercase tracking-wider text-[color:var(--muted)]">
+    <div className="flex flex-col gap-1.5">
+      <Label
+        htmlFor={id}
+        className="text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]"
+      >
         {label}
-      </span>
-      <input
+      </Label>
+      <Input
+        id={id}
         type="number"
         value={value}
         min={min}
@@ -153,8 +166,37 @@ function NumberField({
           const n = Number(e.target.value);
           if (Number.isFinite(n)) onChange(n);
         }}
-        className="h-10 w-full rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 text-sm text-[color:var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[color:var(--teal)]/50"
+        className="tabular"
       />
-    </label>
+    </div>
+  );
+}
+
+function PctRow({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="flex items-baseline justify-between py-0.5">
+      <span
+        className={
+          accent
+            ? "font-medium text-[color:var(--accent-gold)]"
+            : "text-[color:var(--muted)]"
+        }
+      >
+        {label}
+      </span>
+      <span
+        className={`tabular ${accent ? "font-serif text-lg text-[color:var(--accent-gold)]" : ""}`}
+      >
+        {value}
+      </span>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ import {
 } from "lightweight-charts";
 
 export type HistoryPoint = {
-  date: string; // ISO
+  date: string;
   totalValuePLN: number;
   totalCostPLN: number;
 };
@@ -26,47 +26,55 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
     const chart: IChartApi = createChart(container, {
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#8a94a6",
+        textColor: "hsl(30 5% 65%)",
         fontFamily: "inherit",
+        fontSize: 11,
       },
       grid: {
-        vertLines: { color: "rgba(31, 44, 72, 0.6)" },
-        horzLines: { color: "rgba(31, 44, 72, 0.6)" },
+        vertLines: { color: "hsl(30 6% 12%)" },
+        horzLines: { color: "hsl(30 6% 12%)" },
       },
       timeScale: {
         timeVisible: false,
-        borderColor: "rgba(31, 44, 72, 0.6)",
+        borderColor: "hsl(30 6% 15%)",
       },
       rightPriceScale: {
-        borderColor: "rgba(31, 44, 72, 0.6)",
+        borderColor: "hsl(30 6% 15%)",
       },
-      crosshair: { mode: 1 },
+      crosshair: {
+        mode: 1,
+        vertLine: { color: "hsl(30 6% 25%)", labelBackgroundColor: "hsl(30 8% 8%)" },
+        horzLine: { color: "hsl(30 6% 25%)", labelBackgroundColor: "hsl(30 8% 8%)" },
+      },
       autoSize: true,
     });
 
+    const priceFormat = {
+      type: "custom" as const,
+      formatter: (v: number) =>
+        new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "PLN",
+          maximumFractionDigits: 0,
+        }).format(v),
+      minMove: 1,
+    };
+
     const valueSeries = chart.addSeries(AreaSeries, {
-      lineColor: "#2dd4bf",
-      topColor: "rgba(45, 212, 191, 0.35)",
-      bottomColor: "rgba(45, 212, 191, 0.02)",
+      lineColor: "hsl(38 45% 62%)",
+      topColor: "hsl(38 45% 62% / 0.28)",
+      bottomColor: "hsl(38 45% 62% / 0.01)",
       lineWidth: 2,
-      priceFormat: {
-        type: "custom",
-        formatter: (v: number) =>
-          new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "PLN",
-            maximumFractionDigits: 0,
-          }).format(v),
-        minMove: 1,
-      },
+      priceFormat,
     });
 
     const costSeries = chart.addSeries(LineSeries, {
-      color: "rgba(212, 175, 55, 0.7)",
+      color: "hsl(30 6% 40%)",
       lineWidth: 1,
-      lineStyle: 2, // dashed
+      lineStyle: 2,
       priceLineVisible: false,
       lastValueVisible: false,
+      priceFormat,
     });
 
     const sorted = [...data].sort(
@@ -93,23 +101,28 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
 
   if (data.length === 0) {
     return (
-      <div className="flex h-[240px] items-center justify-center rounded-lg border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
-        No history yet. A snapshot is taken every day you visit, plus one at
-        end of day. Come back tomorrow.
+      <div className="flex h-[280px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-[color:var(--border)]">
+        <div className="text-sm text-[color:var(--muted-strong)]">
+          No history yet
+        </div>
+        <div className="max-w-xs text-center text-xs text-[color:var(--muted)]">
+          A snapshot is taken each day you visit, plus one at end of day. Come
+          back tomorrow to see your line take shape.
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div ref={containerRef} className="h-[280px] w-full" />
-      <div className="mt-3 flex items-center justify-end gap-4 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
+      <div ref={containerRef} className="h-[320px] w-full" />
+      <div className="mt-3 flex items-center justify-end gap-5 text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
         <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-3 rounded-full bg-[color:var(--teal)]" />
+          <span className="h-1.5 w-3 rounded-full bg-[color:var(--accent-gold)]" />
           Value
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-0 w-3 border-t border-dashed border-[color:var(--gold)]" />
+          <span className="h-0 w-3 border-t border-dashed border-[color:var(--muted)]" />
           Cost basis
         </span>
       </div>

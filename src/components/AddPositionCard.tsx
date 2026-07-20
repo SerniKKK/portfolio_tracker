@@ -2,33 +2,45 @@
 
 import { useState } from "react";
 import { PositionForm } from "./PositionForm";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
-export function AddPositionCard() {
+export function AddPositionButton() {
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="card">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="section-title">Add position</h2>
-          <p className="mt-1 text-xs text-[color:var(--muted)]">
-            Enter a stock, ETF, crypto or cash holding you already own.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="rounded-md border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-1.5 text-xs font-medium transition hover:border-[color:var(--teal)] hover:text-[color:var(--teal)]"
-          aria-expanded={open}
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1.5 border-[color:var(--border-strong)] bg-[color:var(--surface-elevated)]"
         >
-          {open ? "Close" : "+ New position"}
-        </button>
-      </div>
-      {open && (
-        <div className="mt-5 border-t border-[color:var(--border)] pt-5">
-          <PositionForm />
+          <Plus className="size-3.5" />
+          Add position
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full sm:max-w-lg">
+        <SheetHeader>
+          <SheetTitle className="font-serif text-2xl">
+            New position
+          </SheetTitle>
+          <SheetDescription>
+            Enter a stock, ETF, crypto or cash holding you already own.
+          </SheetDescription>
+        </SheetHeader>
+        <div className="mt-6 px-4">
+          <PositionForm onSuccess={() => setOpen(false)} />
         </div>
-      )}
-    </section>
+      </SheetContent>
+    </Sheet>
   );
 }

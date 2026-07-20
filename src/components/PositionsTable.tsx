@@ -13,6 +13,7 @@ import {
 } from "@/lib/format";
 import { colorForKey } from "@/lib/palette";
 import { DeletePositionButton } from "./DeletePositionButton";
+import { ArrowDown, ArrowUp, ArrowUpDown, MousePointerClick } from "lucide-react";
 
 type SortKey =
   | "name"
@@ -77,26 +78,34 @@ export function PositionsTable({
 
   return (
     <div className="-mx-2 overflow-x-auto sm:mx-0">
-      <table className="w-full min-w-[820px] text-sm">
+      <table className="w-full min-w-[860px] text-sm">
         <thead>
-          <tr className="text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
-            {COLUMNS.map((c) => (
-              <th
-                key={c.key}
-                onClick={() => toggleSort(c.key)}
-                className={`cursor-pointer select-none border-b border-[color:var(--border)] py-2.5 px-2 font-medium transition hover:text-[color:var(--foreground)] ${
-                  c.align === "right" ? "text-right" : "text-left"
-                }`}
-              >
-                {c.label}
-                {sortKey === c.key && (
-                  <span className="ml-1 text-[color:var(--teal)]">
-                    {sortDir === "asc" ? "▲" : "▼"}
+          <tr className="text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
+            {COLUMNS.map((c) => {
+              const active = sortKey === c.key;
+              const SortIcon = active
+                ? sortDir === "asc"
+                  ? ArrowUp
+                  : ArrowDown
+                : ArrowUpDown;
+              return (
+                <th
+                  key={c.key}
+                  onClick={() => toggleSort(c.key)}
+                  className={`cursor-pointer select-none border-b border-[color:var(--border)] py-3 px-2 font-medium transition hover:text-[color:var(--foreground)] ${
+                    c.align === "right" ? "text-right" : "text-left"
+                  }`}
+                >
+                  <span className={`inline-flex items-center gap-1 ${c.align === "right" ? "flex-row-reverse" : ""}`}>
+                    {c.label}
+                    <SortIcon
+                      className={`size-3 ${active ? "text-[color:var(--accent-gold)]" : "text-[color:var(--border-strong)]"}`}
+                    />
                   </span>
-                )}
-              </th>
-            ))}
-            <th className="border-b border-[color:var(--border)] py-2.5 px-2 text-right" />
+                </th>
+              );
+            })}
+            <th className="border-b border-[color:var(--border)] py-3 px-2 text-right" />
           </tr>
         </thead>
         <tbody>
@@ -111,43 +120,46 @@ export function PositionsTable({
                 onClick={
                   clickable ? () => onSelect?.(m.position.id) : undefined
                 }
-                className={`border-b border-[color:var(--border)]/40 transition ${
+                className={`group border-b border-[color:var(--border)]/60 transition-colors ${
                   clickable ? "cursor-pointer" : ""
                 } ${
                   isSelected
-                    ? "bg-[color:var(--surface-2)]/70"
-                    : "hover:bg-[color:var(--surface-2)]/40"
+                    ? "bg-[color:var(--surface-elevated)]"
+                    : "hover:bg-[color:var(--surface-elevated)]/60"
                 }`}
               >
-                <td className="py-2.5 px-2">
-                  <div className="flex items-center gap-2.5">
+                <td className="py-3 px-2">
+                  <div className="flex items-center gap-3">
                     <span
-                      className="h-2 w-2 shrink-0 rounded-full"
+                      className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-[color:var(--background)]"
                       style={{ backgroundColor: dotColor }}
                     />
                     <div className="min-w-0">
-                      <div className="truncate font-medium">
-                        {m.position.name}
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate font-medium">{m.position.name}</span>
+                        {clickable && isSelected && (
+                          <MousePointerClick className="size-3 text-[color:var(--accent-gold)]" />
+                        )}
                       </div>
-                      <div className="text-[11px] text-[color:var(--muted)]">
+                      <div className="mt-0.5 font-mono text-[10.5px] uppercase tracking-wider text-[color:var(--muted)]">
                         {m.position.ticker}
                       </div>
                     </div>
                   </div>
                 </td>
-                <td className="py-2.5 px-2">
+                <td className="py-3 px-2">
                   <AssetTypeBadge type={m.position.assetType} />
                 </td>
-                <td className="tabular py-2.5 px-2 text-right">
+                <td className="tabular py-3 px-2 text-right">
                   {formatQuantity(m.position.quantity)}
                 </td>
-                <td className="tabular py-2.5 px-2 text-right text-[color:var(--muted)]">
+                <td className="tabular py-3 px-2 text-right text-[color:var(--muted-strong)]">
                   {formatCurrency(
                     m.position.purchasePrice,
                     m.position.purchaseCurrency
                   )}
                 </td>
-                <td className="tabular py-2.5 px-2 text-right">
+                <td className="tabular py-3 px-2 text-right">
                   {m.livePrice.isFallback ? (
                     <span className="text-[color:var(--muted)]">n/a</span>
                   ) : (
@@ -168,11 +180,11 @@ export function PositionsTable({
                     </>
                   )}
                 </td>
-                <td className="tabular py-2.5 px-2 text-right font-medium">
+                <td className="tabular py-3 px-2 text-right font-medium">
                   {formatCompactCurrency(m.currentValuePLN, "PLN")}
                 </td>
                 <td
-                  className="tabular py-2.5 px-2 text-right"
+                  className="tabular py-3 px-2 text-right"
                   style={{
                     color: positive ? "var(--positive)" : "var(--negative)",
                   }}
@@ -180,18 +192,18 @@ export function PositionsTable({
                   {formatSignedCompact(m.pnlPLN, "PLN")}
                 </td>
                 <td
-                  className="tabular py-2.5 px-2 text-right"
+                  className="tabular py-3 px-2 text-right"
                   style={{
                     color: positive ? "var(--positive)" : "var(--negative)",
                   }}
                 >
                   {formatSignedPercent(m.pnlPct)}
                 </td>
-                <td className="py-2.5 px-2 text-[11px] text-[color:var(--muted)]">
+                <td className="py-3 px-2 text-[11px] text-[color:var(--muted)]">
                   {formatDate(m.position.purchaseDate)}
                 </td>
                 <td
-                  className="py-2.5 px-2 text-right"
+                  className="py-3 px-2 text-right"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <DeletePositionButton id={m.position.id} />
@@ -228,14 +240,11 @@ function getSortValue(m: PositionMetrics, key: SortKey): string | number {
   }
 }
 
-const ASSET_TYPE_STYLE: Record<
-  string,
-  { color: string; label: string }
-> = {
-  STOCK: { color: "var(--teal)", label: "Stock" },
-  ETF: { color: "var(--gold)", label: "ETF" },
-  CRYPTO: { color: "#c084fc", label: "Crypto" },
-  CASH: { color: "var(--muted)", label: "Cash" },
+const ASSET_TYPE_STYLE: Record<string, { color: string; label: string }> = {
+  STOCK: { color: "hsl(172 40% 55%)", label: "Stock" },
+  ETF: { color: "hsl(38 45% 62%)", label: "ETF" },
+  CRYPTO: { color: "hsl(280 30% 65%)", label: "Crypto" },
+  CASH: { color: "hsl(30 5% 55%)", label: "Cash" },
 };
 
 function AssetTypeBadge({ type }: { type: string }) {
@@ -245,13 +254,13 @@ function AssetTypeBadge({ type }: { type: string }) {
   };
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
-      style={{ color: s.color }}
+      className="inline-flex items-center gap-1.5 rounded-md border px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]"
+      style={{
+        color: s.color,
+        borderColor: `${s.color}33`,
+        backgroundColor: `${s.color}12`,
+      }}
     >
-      <span
-        className="h-1 w-1 rounded-full"
-        style={{ backgroundColor: s.color }}
-      />
       {s.label}
     </span>
   );

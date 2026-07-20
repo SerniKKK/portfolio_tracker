@@ -2,8 +2,6 @@
 
 import { useEffect, useRef } from "react";
 
-// TradingView Advanced Real-Time Chart Widget (free embed, not the paid library).
-// Re-mounts on symbol change by clearing and re-appending the script.
 export function MarketWidget({ symbol }: { symbol: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -28,8 +26,8 @@ export function MarketWidget({ symbol }: { symbol: string }) {
       locale: "en",
       hide_side_toolbar: true,
       allow_symbol_change: false,
-      backgroundColor: "rgba(17, 26, 46, 0.4)",
-      gridColor: "rgba(31, 44, 72, 0.6)",
+      backgroundColor: "rgba(20, 17, 15, 0.4)",
+      gridColor: "rgba(58, 51, 45, 0.4)",
       studies: [],
       support_host: "https://www.tradingview.com",
     });
@@ -44,7 +42,7 @@ export function MarketWidget({ symbol }: { symbol: string }) {
   return (
     <div
       ref={containerRef}
-      className="tradingview-widget-container aspect-[4/3] w-full overflow-hidden rounded-lg border border-[color:var(--border)] bg-[color:var(--surface-2)] sm:aspect-[16/10] lg:aspect-[16/9]"
+      className="tradingview-widget-container aspect-[4/3] w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)] sm:aspect-[16/10] lg:aspect-[16/9]"
     />
   );
 }

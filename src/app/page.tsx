@@ -7,10 +7,10 @@ import { fetchFxRates } from "@/lib/fx";
 import { getSnapshotsForUser, upsertDailySnapshot } from "@/lib/snapshots";
 import { AppHeader } from "@/components/AppHeader";
 import { HeroSummary } from "@/components/HeroSummary";
-import { AddPositionCard } from "@/components/AddPositionCard";
 import { DashboardBody } from "@/components/DashboardBody";
 import { PortfolioHistoryChart } from "@/components/PortfolioHistoryChart";
 import { MonteCarloSection } from "@/components/MonteCarloSection";
+import { Activity } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -56,16 +56,19 @@ export default async function Home() {
   return (
     <>
       <AppHeader fx={fxResult} />
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6 sm:px-8 sm:py-8">
         <HeroSummary
           totals={totals}
           positionCount={positions.length}
           fx={fxResult}
         />
 
-        <section className="card">
-          <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="section-title">Portfolio value history</h2>
+        <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="section-label flex items-center gap-1.5">
+              <Activity className="size-3" />
+              Portfolio value history
+            </div>
             <span className="text-[11px] text-[color:var(--muted)]">
               {historyData.length}{" "}
               {historyData.length === 1 ? "snapshot" : "snapshots"} · daily
@@ -76,12 +79,13 @@ export default async function Home() {
 
         <DashboardBody metrics={metrics} />
 
-        <AddPositionCard />
-
         <MonteCarloSection initialValue={totals.totalValuePLN} />
 
-        <footer className="pt-4 text-center text-[10px] text-[color:var(--muted)]">
-          Data from CoinGecko, Finnhub, and NBP. Cached in DB. Not investment advice.
+        <footer className="mt-4 flex flex-col items-center gap-1 pb-4 text-center text-[10px] text-[color:var(--muted)]">
+          <div>
+            Data from CoinGecko, Finnhub, and NBP. Cached in the app database.
+          </div>
+          <div>Not investment advice.</div>
         </footer>
       </main>
     </>

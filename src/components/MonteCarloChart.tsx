@@ -27,20 +27,21 @@ export function MonteCarloChart({
     const chart: IChartApi = createChart(container, {
       layout: {
         background: { type: ColorType.Solid, color: "transparent" },
-        textColor: "#8a94a6",
+        textColor: "hsl(30 5% 65%)",
         fontFamily: "inherit",
+        fontSize: 11,
       },
       grid: {
-        vertLines: { color: "rgba(31, 44, 72, 0.6)" },
-        horzLines: { color: "rgba(31, 44, 72, 0.6)" },
+        vertLines: { color: "hsl(30 6% 12%)" },
+        horzLines: { color: "hsl(30 6% 12%)" },
       },
-      timeScale: {
-        borderColor: "rgba(31, 44, 72, 0.6)",
+      timeScale: { borderColor: "hsl(30 6% 15%)" },
+      rightPriceScale: { borderColor: "hsl(30 6% 15%)" },
+      crosshair: {
+        mode: 1,
+        vertLine: { color: "hsl(30 6% 25%)", labelBackgroundColor: "hsl(30 8% 8%)" },
+        horzLine: { color: "hsl(30 6% 25%)", labelBackgroundColor: "hsl(30 8% 8%)" },
       },
-      rightPriceScale: {
-        borderColor: "rgba(31, 44, 72, 0.6)",
-      },
-      crosshair: { mode: 1 },
       autoSize: true,
     });
 
@@ -55,32 +56,30 @@ export function MonteCarloChart({
       minMove: 1,
     };
 
-    // p90 as filled area (upper bound of the cone).
+    // Upper band (p90) — light cream fill
     const upperArea = chart.addSeries(AreaSeries, {
-      lineColor: "rgba(45, 212, 191, 0.5)",
-      topColor: "rgba(45, 212, 191, 0.25)",
-      bottomColor: "rgba(45, 212, 191, 0.02)",
+      lineColor: "hsl(35 32% 78% / 0.6)",
+      topColor: "hsl(35 32% 78% / 0.22)",
+      bottomColor: "hsl(35 32% 78% / 0.02)",
       lineWidth: 1,
       priceFormat,
       priceLineVisible: false,
       lastValueVisible: false,
     });
 
-    // p10 as filled area over the background — subtracts the "below cone" region
-    // so only the band between p10 and p90 appears colored.
+    // Lower area (p10) filled with background to punch out below the cone
     const lowerArea = chart.addSeries(AreaSeries, {
-      lineColor: "rgba(45, 212, 191, 0.5)",
-      topColor: "rgba(11, 17, 32, 1)",
-      bottomColor: "rgba(11, 17, 32, 1)",
+      lineColor: "hsl(35 32% 78% / 0.6)",
+      topColor: "hsl(30 8% 5.5%)",
+      bottomColor: "hsl(30 8% 5.5%)",
       lineWidth: 1,
       priceFormat,
       priceLineVisible: false,
       lastValueVisible: false,
     });
 
-    // p50 median line on top.
     const medianLine = chart.addSeries(LineSeries, {
-      color: "#d4af37",
+      color: "hsl(38 45% 62%)",
       lineWidth: 2,
       priceFormat,
     });
@@ -108,14 +107,14 @@ export function MonteCarloChart({
 
   return (
     <div>
-      <div ref={containerRef} className="h-[320px] w-full" />
-      <div className="mt-3 flex items-center justify-end gap-4 text-[10px] uppercase tracking-wider text-[color:var(--muted)]">
+      <div ref={containerRef} className="h-[340px] w-full" />
+      <div className="mt-3 flex items-center justify-end gap-5 text-[10px] uppercase tracking-[0.14em] text-[color:var(--muted)]">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-3 rounded-sm bg-[color:var(--teal)]/30" />
+          <span className="h-2 w-3 rounded-sm bg-[color:var(--accent-cream)]/25" />
           p10 – p90
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-0.5 w-3 bg-[color:var(--gold)]" />
+          <span className="h-0.5 w-3 bg-[color:var(--accent-gold)]" />
           median
         </span>
       </div>
