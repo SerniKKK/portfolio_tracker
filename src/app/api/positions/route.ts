@@ -1,18 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { AssetType, Currency } from "@prisma/client";
+import { auth } from "@/auth";
 
 const ASSET_TYPES = new Set<string>(Object.values(AssetType));
 const CURRENCIES = new Set<string>(Object.values(Currency));
 
 export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const positions = await prisma.position.findMany({
+    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
   return NextResponse.json(positions);
 }
 
 export async function POST(req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -25,7 +37,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  const created = await prisma.position.create({ data: parsed.data });
+  const created = await prisma.position.create({
+    data: { ...parsed.data, userId: session.user.id },
+  });
   return NextResponse.json(created, { status: 201 });
 }
 

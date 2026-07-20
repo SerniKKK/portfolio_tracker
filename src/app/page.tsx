@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
 import { fetchLivePrices, lookupPrice } from "@/lib/prices";
@@ -5,11 +7,16 @@ import { fetchFxRates } from "@/lib/fx";
 import { PositionForm } from "@/components/PositionForm";
 import { PositionsTable } from "@/components/PositionsTable";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
+import { UserMenu } from "@/components/UserMenu";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/signin");
+
   const positions = await prisma.position.findMany({
+    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
   });
 
@@ -32,18 +39,19 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8 px-6 py-10">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="h-2.5 w-2.5 rounded-full bg-[color:var(--teal)]" />
           <span className="text-xs uppercase tracking-widest text-[color:var(--muted)]">
             Portfolio Tracker
           </span>
+          {hasStaleData && (
+            <span className="ml-2 text-xs text-[color:var(--muted)]">
+              Some data is stale or unavailable
+            </span>
+          )}
         </div>
-        {hasStaleData && (
-          <span className="text-xs text-[color:var(--muted)]">
-            Some data is stale or unavailable
-          </span>
-        )}
+        <UserMenu />
       </header>
 
       <PortfolioSummary

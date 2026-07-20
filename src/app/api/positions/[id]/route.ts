@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
 import { parsePositionInput } from "../route";
 
 type Params = { params: Promise<{ id: string }> };
 
 export async function PATCH(req: Request, { params }: Params) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
 
   let body: unknown;
@@ -19,23 +24,32 @@ export async function PATCH(req: Request, { params }: Params) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
-  try {
-    const updated = await prisma.position.update({
-      where: { id },
-      data: parsed.data,
-    });
-    return NextResponse.json(updated);
-  } catch {
+  const result = await prisma.position.updateMany({
+    where: { id, userId: session.user.id },
+    data: parsed.data,
+  });
+
+  if (result.count === 0) {
     return NextResponse.json({ error: "Position not found" }, { status: 404 });
   }
+
+  const updated = await prisma.position.findUnique({ where: { id } });
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(_req: Request, { params }: Params) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { id } = await params;
-  try {
-    await prisma.position.delete({ where: { id } });
-    return NextResponse.json({ ok: true });
-  } catch {
+
+  const result = await prisma.position.deleteMany({
+    where: { id, userId: session.user.id },
+  });
+
+  if (result.count === 0) {
     return NextResponse.json({ error: "Position not found" }, { status: 404 });
   }
+  return NextResponse.json({ ok: true });
 }
