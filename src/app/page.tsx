@@ -9,6 +9,7 @@ import { PositionForm } from "@/components/PositionForm";
 import { DashboardBody } from "@/components/DashboardBody";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
 import { PortfolioHistoryChart } from "@/components/PortfolioHistoryChart";
+import { MonteCarloSection } from "@/components/MonteCarloSection";
 import { UserMenu } from "@/components/UserMenu";
 
 export const dynamic = "force-dynamic";
@@ -88,6 +89,8 @@ export default async function Home() {
         </div>
         <PortfolioHistoryChart data={historyData} />
       </section>
+
+      <MonteCarloSection initialValue={totals.totalValuePLN} />
 
       <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
         <h2 className="mb-4 text-lg font-semibold">Add position</h2>
