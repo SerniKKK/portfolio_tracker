@@ -1,3 +1,7 @@
+# Portfolio Tracker
+
+Personal investment portfolio tracker built with Next.js, Prisma, and Neon Postgres. Live at https://portfolio-tracker-iota-one.vercel.app
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
