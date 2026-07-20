@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { computePositionMetrics, computePortfolioTotals } from "@/lib/finance";
 import { fetchLivePrices, lookupPrice } from "@/lib/prices";
 import { fetchFxRates } from "@/lib/fx";
+import { getSnapshotsForUser, upsertDailySnapshot } from "@/lib/snapshots";
 import { PositionForm } from "@/components/PositionForm";
 import { DashboardBody } from "@/components/DashboardBody";
 import { PortfolioSummary } from "@/components/PortfolioSummary";
+import { PortfolioHistoryChart } from "@/components/PortfolioHistoryChart";
 import { UserMenu } from "@/components/UserMenu";
 
 export const dynamic = "force-dynamic";
@@ -14,9 +16,10 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const session = await auth();
   if (!session?.user?.id) redirect("/signin");
+  const userId = session.user.id;
 
   const positions = await prisma.position.findMany({
-    where: { userId: session.user.id },
+    where: { userId },
     orderBy: { createdAt: "desc" },
   });
 
@@ -33,6 +36,21 @@ export default async function Home() {
     )
   );
   const totals = computePortfolioTotals(metrics);
+
+  if (positions.length > 0) {
+    await upsertDailySnapshot(
+      userId,
+      totals.totalValuePLN,
+      totals.totalCostPLN
+    );
+  }
+
+  const snapshots = await getSnapshotsForUser(userId);
+  const historyData = snapshots.map((s) => ({
+    date: s.date.toISOString(),
+    totalValuePLN: s.totalValuePLN,
+    totalCostPLN: s.totalCostPLN,
+  }));
 
   const hasStaleData =
     fxResult.isStale || metrics.some((m) => m.livePrice.isStale);
@@ -59,6 +77,17 @@ export default async function Home() {
         positionCount={positions.length}
         fx={fxResult}
       />
+
+      <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
+        <div className="mb-4 flex items-baseline justify-between">
+          <h2 className="text-lg font-semibold">Portfolio value history</h2>
+          <span className="text-xs text-[color:var(--muted)]">
+            {historyData.length}{" "}
+            {historyData.length === 1 ? "snapshot" : "snapshots"}
+          </span>
+        </div>
+        <PortfolioHistoryChart data={historyData} />
+      </section>
 
       <section className="rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)]/70 p-6 shadow-xl backdrop-blur">
         <h2 className="mb-4 text-lg font-semibold">Add position</h2>

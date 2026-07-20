@@ -12,7 +12,10 @@ export const authConfig = {
     authorized({ auth, request }) {
       const isAuth = Boolean(auth?.user);
       const path = request.nextUrl.pathname;
-      const isPublic = path === "/signin" || path.startsWith("/api/auth");
+      const isPublic =
+        path === "/signin" ||
+        path.startsWith("/api/auth") ||
+        path.startsWith("/api/cron");
       if (isPublic) return true;
       return isAuth;
     },
