@@ -5,7 +5,7 @@
 
 :root {
   /* Base */
-  --background: hsl(30 8% 5.5%);
+  --background: hsl(30 8% 4.5%);
   --surface: hsl(30 9% 8%);
   --surface-elevated: hsl(30 10% 11%);
   --surface-strong: hsl(30 10% 14%);
@@ -128,6 +128,49 @@ body {
     var(--border-strong) 80%,
     transparent
   );
+}
+
+/* Depth / elevation — turns flat cards into layered surfaces without changing
+   the palette: a faint top-edge highlight, a subtle top-to-bottom surface
+   gradient, and a soft ambient shadow. Same fintech language, more richness. */
+.panel {
+  background: linear-gradient(
+    180deg,
+    hsl(30 9% 12%),
+    hsl(30 9% 10%)
+  );
+  border: 1px solid hsl(30 7% 20%);
+  box-shadow:
+    inset 0 1px 0 hsl(35 40% 88% / 0.06),
+    0 1px 2px hsl(0 0% 0% / 0.4),
+    0 24px 48px -30px hsl(0 0% 0% / 0.7);
+}
+
+/* Hero glow — a warm gold pool from the top-left and a cooler teal one from the
+   right, sitting behind the content. Gives the page a focal point instead of a
+   flat dark rectangle. */
+.hero-glow {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero-glow::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      50% 140% at 6% -15%,
+      hsl(38 62% 55% / 0.26),
+      transparent 72%
+    ),
+    radial-gradient(
+      45% 150% at 104% 0%,
+      hsl(172 48% 52% / 0.15),
+      transparent 72%
+    );
 }
 
 /* Motion helpers */

@@ -25,7 +25,7 @@ export function HeroSummary({
   const Arrow = positive ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <section className="fade-up rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-6 sm:p-8">
+    <section className="panel hero-glow fade-up rounded-2xl p-6 sm:p-8">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div>
           <div className="section-label">Total portfolio value</div>

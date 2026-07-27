@@ -17,7 +17,7 @@ export default async function SignInPage({
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-md rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] p-8 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl panel p-8 shadow-2xl">
         <div className="mb-6 flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-[color:var(--border-strong)] bg-gradient-to-br from-[color:var(--surface-elevated)] to-[color:var(--surface)]">
             <TrendingUp className="size-4 text-[color:var(--accent-cream)]" strokeWidth={2.2} />
