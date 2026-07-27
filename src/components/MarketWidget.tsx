@@ -56,11 +56,26 @@ export function MarketWidget({
   }, [symbol]);
 
   return (
-    <div
-      ref={containerRef}
-      key={symbol}
-      style={{ height: WIDGET_HEIGHT }}
-      className="tradingview-widget-container scale-in w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)]"
-    />
+    <div className="scale-in">
+      <div
+        ref={containerRef}
+        key={symbol}
+        style={{ height: WIDGET_HEIGHT }}
+        className="tradingview-widget-container w-full overflow-hidden rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-elevated)]"
+      />
+      {/* Fallback: the embed shows its own "invalid symbol" state for tickers it
+          can't resolve (e.g. a coin not listed on Binance). This link always
+          gives a working path to the chart. */}
+      <div className="mt-2 text-right">
+        <a
+          href={`https://www.tradingview.com/chart/?symbol=${encodeURIComponent(symbol)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[11px] text-[color:var(--muted)] underline-offset-2 transition-colors hover:text-[color:var(--foreground)] hover:underline"
+        >
+          Chart not loading? Open on TradingView ↗
+        </a>
+      </div>
+    </div>
   );
 }

@@ -64,8 +64,15 @@ export function DashboardBody({ metrics }: { metrics: PositionMetrics[] }) {
               displayName={selected.position.name}
             />
           ) : (
-            <div className="flex aspect-[16/9] items-center justify-center rounded-xl border border-dashed border-[color:var(--border)] text-sm text-[color:var(--muted)]">
-              No market chart for cash-only portfolios.
+            <div className="flex aspect-[16/9] flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-[color:var(--border)] px-6 text-center">
+              <div className="text-sm text-[color:var(--muted-strong)]">
+                No chart to show
+              </div>
+              <div className="max-w-xs text-xs text-[color:var(--muted)]">
+                {metrics.length === 0
+                  ? "Add a stock, ETF or crypto position to see its live chart."
+                  : "Cash holdings have no market chart. Add a stock, ETF or crypto to see one."}
+              </div>
             </div>
           )}
         </div>
