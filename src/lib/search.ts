@@ -8,6 +8,7 @@ export type SearchResult = {
   currency: Currency;
   exchange?: string;
   logo?: string;
+  rank?: number; // CoinGecko market_cap_rank; lower = more established
   source: "finnhub" | "coingecko";
 };
 
@@ -91,6 +92,7 @@ export async function searchCoinGecko(q: string): Promise<SearchResult[]> {
         currency: "USD",
         exchange: "CoinGecko",
         logo: c.thumb,
+        rank: c.market_cap_rank ?? undefined,
         source: "coingecko",
       })
     );
@@ -99,22 +101,58 @@ export async function searchCoinGecko(q: string): Promise<SearchResult[]> {
   }
 }
 
-function scoreResult(r: SearchResult, q: string): number {
-  const qu = q.toUpperCase();
+// Base match score: how well the query matches the ticker/name. Ticker and
+// name matches are kept close in value so a company-name query ("apple")
+// isn't automatically beaten by a junk coin whose ticker happens to equal it.
+function matchScore(r: SearchResult, qu: string): number {
   const tk = r.ticker.toUpperCase();
   const nm = r.name.toUpperCase();
-  if (tk === qu) return 1000;
-  if (tk.startsWith(qu)) return 500 - tk.length;
-  if (nm === qu) return 400;
-  if (nm.startsWith(qu)) return 200 - nm.length;
-  if (nm.includes(qu)) return 100 - nm.length;
-  if (tk.includes(qu)) return 60 - tk.length;
+  if (tk === qu) return 900;
+  if (nm === qu) return 850;
+  if (tk.startsWith(qu)) return 700 - tk.length;
+  if (nm.startsWith(qu)) return 640 - nm.length;
+  if (nm.includes(` ${qu}`)) return 400 - nm.length; // word-boundary hit
+  if (nm.includes(qu)) return 250 - nm.length;
+  if (tk.includes(qu)) return 150 - tk.length;
   return 0;
 }
 
+// Quality modifier: legitimacy of the instrument, independent of the query.
+// Exchange-listed equities are real; established coins (low market-cap rank)
+// are real; rankless CoinGecko hits are usually memecoins / tokenized proxies
+// and get pushed down so they can't outrank the obvious match.
+function qualityBonus(r: SearchResult): number {
+  if (r.source === "finnhub") return 80;
+  // Reward established coins (rank ~1 → +139) and penalize obscure / rankless
+  // ones (memecoins, tokenized-stock proxies) down to a floor, so an exact
+  // ticker match on a junk coin can't outrank a real equity or a top coin.
+  const rank = r.rank ?? 9999;
+  return Math.max(-400, 140 - rank);
+}
+
+function scoreResult(r: SearchResult, q: string): number {
+  const qu = q.toUpperCase();
+  const base = matchScore(r, qu);
+  if (base <= 0) return 0;
+  return base + qualityBonus(r);
+}
+
+// Short-lived in-memory cache so repeated queries (typing the same thing,
+// backspacing, several users searching "AAPL") don't burn the Finnhub quota
+// of 60 req/min. Fluid Compute reuses instances, so this survives across
+// requests on the same lambda. Keyed by the normalized query.
+const SEARCH_TTL_MS = 60_000;
+const searchCache = new Map<string, { at: number; results: SearchResult[] }>();
+
 export async function searchAll(q: string): Promise<SearchResult[]> {
   const trimmed = q.trim();
-  if (trimmed.length < 1) return [];
+  if (trimmed.length < 2) return [];
+
+  const cacheKey = trimmed.toLowerCase();
+  const cached = searchCache.get(cacheKey);
+  if (cached && Date.now() - cached.at < SEARCH_TTL_MS) {
+    return cached.results;
+  }
 
   const [finnhub, gecko] = await Promise.all([
     searchFinnhub(trimmed),
@@ -123,5 +161,14 @@ export async function searchAll(q: string): Promise<SearchResult[]> {
 
   const merged = [...finnhub, ...gecko];
   merged.sort((a, b) => scoreResult(b, trimmed) - scoreResult(a, trimmed));
-  return merged.slice(0, 12);
+  const results = merged.slice(0, 12);
+
+  searchCache.set(cacheKey, { at: Date.now(), results });
+  // Bound the map so a long-lived instance doesn't grow unboundedly.
+  if (searchCache.size > 200) {
+    const oldest = searchCache.keys().next().value;
+    if (oldest) searchCache.delete(oldest);
+  }
+
+  return results;
 }
