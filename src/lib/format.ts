@@ -21,6 +21,24 @@ export function formatCurrency(value: number, currency: Currency): string {
   return getCurrencyFormatter(currency).format(value);
 }
 
+// Per-unit price formatter. Fixed 2 decimals reads "$0.00" for micro-cap coins
+// (PEPE ~$0.00000293), so for sub-dollar values we widen the decimals to keep
+// ~3 significant figures (capped at 8). Values >= 1 use the standard formatter.
+export function formatPrice(value: number, currency: Currency): string {
+  if (!Number.isFinite(value)) return "-";
+  const abs = Math.abs(value);
+  if (abs === 0 || abs >= 1) return getCurrencyFormatter(currency).format(value);
+
+  const leadingZeros = Math.max(0, -Math.floor(Math.log10(abs)) - 1);
+  const maximumFractionDigits = Math.min(8, leadingZeros + 3);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    minimumFractionDigits: 2,
+    maximumFractionDigits,
+  }).format(value);
+}
+
 export function formatSignedCurrency(value: number, currency: Currency): string {
   if (!Number.isFinite(value)) return "-";
   const sign = value > 0 ? "+" : "";

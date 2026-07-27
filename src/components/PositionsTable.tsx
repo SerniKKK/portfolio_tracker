@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import type { PositionMetrics } from "@/lib/finance";
 import {
   formatCompactCurrency,
-  formatCurrency,
+  formatPrice,
   formatDate,
   formatFetchedAt,
   formatQuantity,
@@ -155,7 +155,7 @@ export function PositionsTable({
                   {formatQuantity(m.position.quantity)}
                 </td>
                 <td className="tabular py-3 px-2 text-right text-[color:var(--muted-strong)]">
-                  {formatCurrency(
+                  {formatPrice(
                     m.position.purchasePrice,
                     m.position.purchaseCurrency
                   )}
@@ -166,7 +166,7 @@ export function PositionsTable({
                   ) : (
                     <>
                       <div>
-                        {formatCurrency(m.livePrice.price, m.livePrice.currency)}
+                        {formatPrice(m.livePrice.price, m.livePrice.currency)}
                       </div>
                       <div
                         className="text-[10px]"
