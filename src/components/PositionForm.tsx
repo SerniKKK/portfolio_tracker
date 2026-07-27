@@ -51,6 +51,7 @@ export function PositionForm({ onSuccess }: { onSuccess?: () => void } = {}) {
       payload = {
         name: selected.name,
         ticker: selected.ticker,
+        externalId: selected.externalId ?? null,
         assetType: selected.assetType satisfies AssetType,
         quantity: Number(fd.get("quantity")),
         purchasePrice: Number(fd.get("purchasePrice")),

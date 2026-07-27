@@ -46,6 +46,7 @@ export async function POST(req: Request) {
 type PositionInput = {
   name: string;
   ticker: string;
+  externalId: string | null;
   assetType: AssetType;
   quantity: number;
   purchasePrice: number;
@@ -61,6 +62,10 @@ export function parsePositionInput(
 
   const name = typeof b.name === "string" ? b.name.trim() : "";
   const ticker = typeof b.ticker === "string" ? b.ticker.trim().toUpperCase() : "";
+  const externalId =
+    typeof b.externalId === "string" && b.externalId.trim()
+      ? b.externalId.trim()
+      : null;
   const assetType = typeof b.assetType === "string" ? b.assetType : "";
   const purchaseCurrency =
     typeof b.purchaseCurrency === "string" ? b.purchaseCurrency : "";
@@ -85,6 +90,7 @@ export function parsePositionInput(
     data: {
       name,
       ticker,
+      externalId,
       assetType: assetType as AssetType,
       quantity,
       purchasePrice,

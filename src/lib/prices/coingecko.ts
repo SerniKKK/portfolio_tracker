@@ -1,4 +1,5 @@
-// Minimal ticker -> CoinGecko coin id map. Extend as needed.
+// Fallback ticker -> CoinGecko coin id map for positions created before we
+// persisted the coin id (externalId). New positions carry their own id.
 const TICKER_TO_ID: Record<string, string> = {
   BTC: "bitcoin",
   ETH: "ethereum",
@@ -14,13 +15,21 @@ const TICKER_TO_ID: Record<string, string> = {
   LTC: "litecoin",
 };
 
+export type CryptoLookup = { ticker: string; externalId?: string | null };
+
 export async function fetchCryptoPricesUSD(
-  tickers: string[]
+  coins: CryptoLookup[]
 ): Promise<Map<string, number>> {
-  const uniqueTickers = [...new Set(tickers.map((t) => t.toUpperCase()))];
-  const idPairs = uniqueTickers
-    .map((t) => [t, TICKER_TO_ID[t]] as const)
-    .filter(([, id]) => Boolean(id));
+  // Resolve each ticker to a coin id: prefer the persisted externalId, fall
+  // back to the hardcoded map for older positions. Dedupe by ticker.
+  const byTicker = new Map<string, string>();
+  for (const { ticker, externalId } of coins) {
+    const t = ticker.toUpperCase();
+    if (byTicker.has(t)) continue;
+    const id = externalId?.trim() || TICKER_TO_ID[t];
+    if (id) byTicker.set(t, id);
+  }
+  const idPairs = [...byTicker.entries()];
 
   if (idPairs.length === 0) return new Map();
 

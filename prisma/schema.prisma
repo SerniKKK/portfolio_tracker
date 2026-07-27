@@ -80,6 +80,10 @@ model Position {
   userId           String
   name             String
   ticker           String
+  // CoinGecko coin id for crypto positions, captured from search. Lets us price
+  // arbitrary coins instead of only the hardcoded ticker->id map. Nullable:
+  // stocks, ETFs and cash never have one, and older crypto rows fall back to the map.
+  externalId       String?
   assetType        AssetType
   quantity         Float
   purchasePrice    Float

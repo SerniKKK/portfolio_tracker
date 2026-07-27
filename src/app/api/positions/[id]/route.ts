@@ -24,9 +24,14 @@ export async function PATCH(req: Request, { params }: Params) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
   }
 
+  // externalId is set at creation from search and identifies which coin this
+  // is; an edit changes quantity/price/date, never the instrument, so preserve
+  // it rather than letting a payload without it null the coin id out.
+  const { externalId: _externalId, ...updateData } = parsed.data;
+
   const result = await prisma.position.updateMany({
     where: { id, userId: session.user.id },
-    data: parsed.data,
+    data: updateData,
   });
 
   if (result.count === 0) {

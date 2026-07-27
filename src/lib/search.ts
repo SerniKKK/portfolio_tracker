@@ -9,6 +9,7 @@ export type SearchResult = {
   exchange?: string;
   logo?: string;
   rank?: number; // CoinGecko market_cap_rank; lower = more established
+  externalId?: string; // CoinGecko coin id, persisted so we can price the coin
   source: "finnhub" | "coingecko";
 };
 
@@ -93,6 +94,7 @@ export async function searchCoinGecko(q: string): Promise<SearchResult[]> {
         exchange: "CoinGecko",
         logo: c.thumb,
         rank: c.market_cap_rank ?? undefined,
+        externalId: c.id,
         source: "coingecko",
       })
     );

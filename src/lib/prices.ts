@@ -19,9 +19,15 @@ const CASH_TICKERS = new Set<Currency>(["PLN", "EUR", "USD"]);
 export async function fetchLivePrices(
   positions: Position[]
 ): Promise<LivePriceMap> {
-  const cryptoTickers = positions
-    .filter((p) => p.assetType === "CRYPTO")
-    .map((p) => p.ticker.toUpperCase());
+  // Map each crypto ticker to its persisted CoinGecko id (if any). Older
+  // positions have no id and fall back to the hardcoded map downstream.
+  const cryptoIdByTicker = new Map<string, string | null>();
+  for (const p of positions) {
+    if (p.assetType !== "CRYPTO") continue;
+    const t = p.ticker.toUpperCase();
+    if (!cryptoIdByTicker.has(t)) cryptoIdByTicker.set(t, p.externalId ?? null);
+  }
+  const cryptoTickers = [...cryptoIdByTicker.keys()];
   const stockTickers = positions
     .filter((p) => p.assetType === "STOCK" || p.assetType === "ETF")
     .map((p) => p.ticker.toUpperCase());
@@ -37,7 +43,12 @@ export async function fetchLivePrices(
 
   const [cryptoRes, stocksRes] = await Promise.allSettled([
     cryptoToFetch.length > 0
-      ? fetchCryptoPricesUSD(cryptoToFetch)
+      ? fetchCryptoPricesUSD(
+          cryptoToFetch.map((t) => ({
+            ticker: t,
+            externalId: cryptoIdByTicker.get(t) ?? null,
+          }))
+        )
       : Promise.resolve(new Map<string, number>()),
     stocksToFetch.length > 0
       ? fetchStockQuotes(stocksToFetch)
