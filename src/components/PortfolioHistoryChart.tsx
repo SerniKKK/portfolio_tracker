@@ -31,8 +31,8 @@ export function PortfolioHistoryChart({ data }: { data: HistoryPoint[] }) {
         fontSize: 11,
       },
       grid: {
-        vertLines: { color: "hsl(30 6% 12%)" },
-        horzLines: { color: "hsl(30 6% 12%)" },
+        vertLines: { color: "hsl(30 6% 16%)" },
+        horzLines: { color: "hsl(30 6% 16%)" },
       },
       timeScale: {
         timeVisible: false,
