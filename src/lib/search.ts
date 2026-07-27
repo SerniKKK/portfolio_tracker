@@ -130,7 +130,8 @@ function qualityBonus(r: SearchResult): number {
   return Math.max(-400, 140 - rank);
 }
 
-function scoreResult(r: SearchResult, q: string): number {
+// Exported for tests.
+export function scoreResult(r: SearchResult, q: string): number {
   const qu = q.toUpperCase();
   const base = matchScore(r, qu);
   if (base <= 0) return 0;
