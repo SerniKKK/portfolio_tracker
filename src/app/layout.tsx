@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -13,8 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Portfolio Tracker",
+  title: {
+    default: "Portfolio Tracker",
+    template: "%s · Portfolio Tracker",
+  },
   description: "Personal investment portfolio tracker",
+  applicationName: "Portfolio Tracker",
+  appleWebApp: {
+    capable: true,
+    title: "Portfolio",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f0c0a",
 };
 
 export default function RootLayout({
