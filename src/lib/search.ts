@@ -138,6 +138,30 @@ export function scoreResult(r: SearchResult, q: string): number {
   return base + qualityBonus(r);
 }
 
+// Sort by relevance, drop duplicates, cap the list. Pure so it can be tested
+// without hitting the network. Finnhub returns the same symbol several times
+// (e.g. "APP" once per listing/venue), which both duplicates rows and collides
+// React keys; dedupe by asset type + ticker, keeping the best-scored entry.
+// A crypto and a like-tickered stock stay distinct because assetType differs.
+export function rankResults(
+  results: SearchResult[],
+  q: string,
+  limit = 12
+): SearchResult[] {
+  const sorted = [...results].sort(
+    (a, b) => scoreResult(b, q) - scoreResult(a, q)
+  );
+  const seen = new Set<string>();
+  const deduped: SearchResult[] = [];
+  for (const r of sorted) {
+    const id = `${r.assetType}:${r.ticker.toUpperCase()}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    deduped.push(r);
+  }
+  return deduped.slice(0, limit);
+}
+
 // Short-lived in-memory cache so repeated queries (typing the same thing,
 // backspacing, several users searching "AAPL") don't burn the Finnhub quota
 // of 60 req/min. Fluid Compute reuses instances, so this survives across
@@ -160,9 +184,7 @@ export async function searchAll(q: string): Promise<SearchResult[]> {
     searchCoinGecko(trimmed),
   ]);
 
-  const merged = [...finnhub, ...gecko];
-  merged.sort((a, b) => scoreResult(b, trimmed) - scoreResult(a, trimmed));
-  const results = merged.slice(0, 12);
+  const results = rankResults([...finnhub, ...gecko], trimmed);
 
   searchCache.set(cacheKey, { at: Date.now(), results });
   // Bound the map so a long-lived instance doesn't grow unboundedly.

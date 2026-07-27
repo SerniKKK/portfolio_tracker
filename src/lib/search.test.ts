@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { SearchResult } from "./search";
-import { scoreResult } from "./search";
+import { rankResults, scoreResult } from "./search";
 
 function stock(ticker: string, name: string): SearchResult {
   return {
@@ -68,5 +68,43 @@ describe("scoreResult", () => {
     const top = scoreResult(coin("FOO", "Foo", 1), "foo");
     const mid = scoreResult(coin("FOO", "Foo", 100), "foo");
     expect(top).toBeGreaterThan(mid);
+  });
+});
+
+describe("rankResults", () => {
+  it("collapses duplicate asset-type + ticker entries (Finnhub repeats)", () => {
+    // Finnhub returns the same symbol several times -> one row after dedupe.
+    const out = rankResults(
+      [
+        stock("APP", "AppLovin Corp - Class A"),
+        stock("APP", "AppLovin Corp"),
+        stock("APP", "AppLovin Corp - Class A"),
+      ],
+      "app"
+    );
+    expect(out).toHaveLength(1);
+    expect(out[0].ticker).toBe("APP");
+  });
+
+  it("produces unique React keys (regression: two children with key f:APP)", () => {
+    const out = rankResults(
+      [stock("APP", "AppLovin Corp"), stock("APP", "AppLovin Corp - Class A")],
+      "app"
+    );
+    const keys = out.map((r) => r.key);
+    expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  it("keeps a stock and a like-tickered crypto as separate rows", () => {
+    const out = rankResults(
+      [stock("AAPL", "Apple Inc"), coin("AAPL", "Apple Robinhood Token", 2645)],
+      "aapl"
+    );
+    expect(out).toHaveLength(2);
+  });
+
+  it("respects the limit", () => {
+    const many = Array.from({ length: 30 }, (_, i) => stock(`T${i}`, `Name ${i}`));
+    expect(rankResults(many, "name", 12)).toHaveLength(12);
   });
 });
