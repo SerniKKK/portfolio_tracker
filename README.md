@@ -10,19 +10,35 @@ conversion, and financial visualization.
 > Access is gated by a Google sign-in allowlist. If you would like to try the demo
 > with your own portfolio, ask the owner to add your email.
 
+## Screenshots
+
+![Dashboard with total portfolio value, gain/loss and daily value history](docs/screenshots/dashboard.png)
+
+| Unified ticker search | Allocation + live market view |
+| --- | --- |
+| ![Typeahead combining Finnhub stocks and CoinGecko crypto, Apple Inc ranked first](docs/screenshots/search.png) | ![Allocation donuts by position and asset type next to a TradingView chart](docs/screenshots/allocation.png) |
+
+![Monte Carlo scenarios showing a p10/p50/p90 fan under user-supplied assumptions](docs/screenshots/monte-carlo.png)
+
 ## Stack
 
 - Next.js 16 (App Router) + TypeScript
 - Tailwind CSS v4
 - Prisma 6 + Neon Postgres
-- Auth.js (NextAuth) v5 with Google, planned Stage 4.5
+- Auth.js (NextAuth) v5 with Google, JWT sessions, email allowlist
 - Recharts (allocation donut), TradingView Lightweight Charts (portfolio history),
   TradingView widgets (per-asset market view)
+- Vitest for the pure finance and simulation logic
 - Deployed on Vercel with automatic deploys from `main`
 
 ## Features shipped
 
 - Add, edit and delete portfolio positions (stocks, ETFs, crypto, cash)
+- Unified ticker search: type a company name or ticker and get a typeahead that
+  merges Finnhub (stocks/ETFs) and CoinGecko (crypto); picking a result fills the
+  ticker, name and asset type. Real ARIA combobox (keyboard nav, `aria-activedescendant`),
+  300 ms debounce, 60 s server-side result cache, deduped results, and relevance
+  ranking that keeps real equities and top coins above coincidental-ticker memecoins
 - Portfolio summary: total value, cost and P/L in PLN plus EUR/USD preview
 - Sortable positions table with per-position P/L
 - Live market data from CoinGecko (crypto) and Finnhub (stocks and ETFs)
@@ -57,19 +73,47 @@ per-ticker rate to at most one call per TTL window, independent of traffic.
 - [x] Stage 6. Daily snapshots per user + portfolio value chart (Lightweight Charts)
 - [x] Stage 6.5. Monte Carlo scenario simulator
 - [x] Stage 7. Design polish + responsiveness
-- [ ] Stage 8. Unit tests, screenshots, final README
+- [x] Stage 8. Unit tests (Vitest), screenshots, final README
 - [ ] Stage 9. PWA (manifest, service worker, icons)
 
 ## Local development
 
 ```bash
 npm install
-cp .env.example .env       # set DATABASE_URL, FINNHUB_API_KEY
+cp .env.example .env       # then fill in the values (see below)
 npx prisma migrate deploy
 npm run dev
 ```
 
 Requires a Postgres instance. Neon free tier works out of the box.
+
+Environment variables (all documented in `.env.example`):
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Neon / Postgres connection string |
+| `FINNHUB_API_KEY` | Stock and ETF quotes + ticker search (free tier) |
+| `AUTH_SECRET` | Auth.js JWT encryption key (`npx auth secret`) |
+| `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` | Google OAuth credentials |
+| `ALLOWED_EMAILS` | Comma-separated sign-in allowlist |
+| `CRON_SECRET` | Shared secret for the daily-snapshot cron (prod only) |
+
+The dashboard is behind sign-in, so the Google OAuth vars and `ALLOWED_EMAILS`
+are needed to view it locally.
+
+## Testing
+
+Vitest covers the pure logic — no database or network required.
+
+```bash
+npm test           # run once
+npm run test:watch # watch mode
+```
+
+Suites: `finance` (PLN conversion, P/L, portfolio totals), `fx` (conversions and
+divide-by-zero guards), `simulator` (deterministic seeded RNG, percentile
+interpolation, an ordered p10 ≤ p50 ≤ p90 fan) and `search` (relevance ranking
+and result de-duplication).
 
 ## What I have learned so far
 
