@@ -43,6 +43,8 @@ conversion, and financial visualization.
 - Sortable positions table with per-position P/L
 - Live market data from CoinGecko (crypto) and Finnhub (stocks and ETFs)
 - NBP table A for FX rates
+- Installable PWA (web app manifest, generated icon set, and a service worker
+  that caches immutable build assets while never masking a new deploy)
 - DB-backed price and FX cache with per-source TTL (crypto 5 min, stocks 15 min, FX 1 h)
 - Tiered fallback: live API -> DB cache -> hardcoded constants (only when DB is empty)
 - "as of X ago" freshness per source, red badge when stale
@@ -74,7 +76,7 @@ per-ticker rate to at most one call per TTL window, independent of traffic.
 - [x] Stage 6.5. Monte Carlo scenario simulator
 - [x] Stage 7. Design polish + responsiveness
 - [x] Stage 8. Unit tests (Vitest), screenshots, final README
-- [ ] Stage 9. PWA (manifest, service worker, icons)
+- [x] Stage 9. PWA (manifest, generated icons, service worker) — installable
 
 ## Local development
 
