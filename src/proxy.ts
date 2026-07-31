@@ -8,6 +8,6 @@ export const config = {
   // icons). These must stay reachable without auth so the manifest and icons
   // load for signed-out visitors and for PWA install.
   matcher: [
-    "/((?!_next/static|_next/image|.*\\.(?:png|ico|svg|webmanifest)$).*)",
+    "/((?!_next/static|_next/image|sw.js|.*\\.(?:png|ico|svg|webmanifest)$).*)",
   ],
 };
